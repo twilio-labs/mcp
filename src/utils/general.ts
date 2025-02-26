@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/prefer-default-export
 export const interpolateUrl = (
   url: string,
   params?: Record<string, unknown>,

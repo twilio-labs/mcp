@@ -3,11 +3,14 @@ import { nanoid } from 'nanoid';
 import { OpenAPI, OpenAPIV3 } from 'openapi-types';
 
 import { API, HttpMethod } from '@app/types.js';
-import logger from '@app/utils/logger.js';
 
 import { OpenAPISpec } from './specs.js';
 
 const SUPPORTED_METHODS = ['get', 'delete', 'post', 'put'];
+
+const trimSlashes = (str: string) => {
+  return str.replace(/^\/+|\/+$/g, '');
+};
 
 export default function loadTools(specs: OpenAPISpec[]) {
   const tools: Map<string, Tool> = new Map();
@@ -18,17 +21,15 @@ export default function loadTools(specs: OpenAPISpec[]) {
     .forEach((spec) => {
       return Object.entries(spec.document.paths as OpenAPI.Operation).forEach(
         ([path, items]) => {
+          const baseURL = items.servers[0].url ?? '';
           return Object.entries(items)
-            .filter(([method, _]) =>
-              SUPPORTED_METHODS.includes(method.toString()),
-            )
+            .filter(([method]) => SUPPORTED_METHODS.includes(method.toString()))
             .forEach(([method, op]) => {
               const operation = op as OpenAPI.Operation;
               if (!operation) {
                 return;
               }
 
-              const cleanPath = path.replace(/^\//, '');
               const id = nanoid(8);
               const name = `${operation.operationId}---${id}`;
 
@@ -44,7 +45,7 @@ export default function loadTools(specs: OpenAPISpec[]) {
               };
               const api: API = {
                 method: method.toUpperCase() as HttpMethod,
-                path,
+                path: `${trimSlashes(baseURL)}/${trimSlashes(path)}`,
                 urlencoded: false,
               };
 

@@ -1,3 +1,5 @@
+import fetch, { Response } from 'node-fetch';
+
 import { HttpMethod } from '@app/types';
 
 import logger from './logger';
@@ -6,14 +8,14 @@ type SuccessResponse<T> = {
   ok: true;
   statusCode: number;
   data: T;
-  response?: globalThis.Response;
+  response?: Response;
 };
 
 type ErrorResponse = {
   ok: false;
   statusCode: number;
   error: Error;
-  response?: globalThis.Response;
+  response?: Response;
 };
 
 type HttpResponse<T> = SuccessResponse<T> | ErrorResponse;
@@ -111,6 +113,8 @@ export default class Http {
 
       return successResponse;
     } catch (error) {
+      logger.error(`Failed to make request ${error}`);
+
       return {
         ok: false,
         statusCode: 500,

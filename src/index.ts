@@ -4,7 +4,7 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import TwilioOpenAPIMCPServer from '@app/server';
 import { logger } from '@app/utils';
 
-const [accountSid, authToken, outboundPhoneNumber] = process.argv.slice(2);
+const [accountSid, authToken] = process.argv.slice(2);
 
 const server = new TwilioOpenAPIMCPServer({
   server: {

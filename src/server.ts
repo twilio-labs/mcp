@@ -106,40 +106,24 @@ export default class TwilioOpenAPIMCPServer {
         api,
         request.params.arguments as Record<string, unknown>,
       );
+      if (!response.ok) {
+        this.logger.error({
+          message: 'failed to make request',
+          api,
+          tool,
+          response,
+        });
+        throw new Error(response.error.message);
+      }
 
-      // this.logger.info(JSON.stringify({ params }));
-      // this.logger.info(JSON.stringify({ tool, api, arugments }));
-      // this.logger.info(JSON.stringify({ api }));
-
-      throw new Error(`Tool (${id}) not found: ${name}`);
-
-      // // Find tool by ID or name
-      // let tool: Tool | undefined;
-      // let toolId: string | undefined;
-      //
-      // if (id) {
-      //   toolId = id.trim();
-      //   tool = this.tools.get(toolId);
-      // } else if (name) {
-      //   for (const [tid, t] of this.tools.entries()) {
-      //     if (t.name === name) {
-      //       tool = t;
-      //       toolId = tid;
-      //       break;
-      //     }
-      //   }
-      // }
-      //
-      // if (!tool || !toolId) {
-      //   console.error(
-      //     `Available tools: ${Array.from(this.tools.entries())
-      //       .map(([id, t]) => `${id} (${t.name})`)
-      //       .join(', ')}`,
-      //   );
-      //   throw new Error(`Tool not found: ${id || name}`);
-      // }
-      //
-      // console.error(`Executing tool: ${toolId} (${tool.name})`);
+      return {
+        content: [
+          {
+            type: 'text',
+            text: JSON.stringify(response.data, null, 2),
+          },
+        ],
+      };
     });
   }
 
