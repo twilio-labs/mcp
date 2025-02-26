@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json.schemastore.org/eslintrc.json",
+  "extends": [
+    "airbnb-base",
+    "airbnb-typescript/base",
+    "plugin:prettier/recommended"
+  ],
+  "plugins": [
+    "prettier",
+    "unused-imports"
+  ],
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
+  "rules": {
+    "prettier/prettier": ["error", {
+      "singleQuote": true,
+      "tabWidth": 2
+    }],
+    "import/extensions": "off",
+    "no-console": "off"
+  }
+}

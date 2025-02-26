@@ -1,0 +1,14 @@
+{
+  "tabWidth": 2,
+  "useTabs": false,
+  "plugins": ["@ianvs/prettier-plugin-sort-imports"],
+  "importOrder": [
+    "<BUILT_IN_MODULES>", "", "<THIRD_PARTY_MODULES>", "",
+    "^@app/(.*)$",
+    "",
+    "^[./]"
+  ],
+  "importOrderParserPlugins": ["typescript", "jsx", "decorators-legacy"],
+  "importOrderTypeScriptVersion": "5.0.0",
+  "singleQuote": true
+}
