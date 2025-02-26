@@ -2,26 +2,51 @@
   "name": "twilio-mcp-server",
   "version": "0.0.1",
   "description": "",
-  "main": "index.js",
+  "license": "ISC",
+  "author": "",
   "type": "module",
+  "main": "index.js",
   "bin": {
     "twilio-mcp-server": "./build/index.js"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc && node -e \"require('fs').chmodSync('build/index.js', '755')\""
   },
   "files": [
     "build"
   ],
-  "author": "",
-  "license": "ISC",
+  "scripts": {
+    "prebuild": "rm -rf build/",
+    "build": "tsc -p tsconfig.json && tsc-alias && node -e \"require('fs').chmodSync('build/index.js', '755')\"",
+    "lint": "eslint src/ --ext .ts",
+    "lint:fix": "eslint src/ --ext .ts --fix",
+    "prepare": "npm run prepare:husky && npm run prepare:open-api",
+    "prepare:husky": "husky",
+    "prepare:open-api": "[ -d open-api ] && (cd open-api && git pull) || git clone https://code.hq.twilio.com/twilio/open-api",
+    "start": "node build"
+  },
+  "lint-staged": {
+    "src/**/*.ts": [
+      "npm run lint:fix"
+    ]
+  },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.6.0",
     "twilio": "^5.4.5"
   },
   "devDependencies": {
+    "@ianvs/prettier-plugin-sort-imports": "^4.1.1",
     "@types/node": "^22.13.5",
-    "typescript": "^5.7.3"
+    "@typescript-eslint/eslint-plugin": "^7.4.0",
+    "@typescript-eslint/parser": "^7.4.0",
+    "dotenv": "^16.4.5",
+    "eslint": "^8.57.0",
+    "eslint-config-airbnb-base": "15.0.0",
+    "eslint-config-airbnb-typescript": "^18.0.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
+    "eslint-plugin-unused-imports": "^3.1.0",
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.7",
+    "tsc-alias": "^1.8.10",
+    "tsx": "^4.15.6",
+    "typescript": "^5"
   }
 }
