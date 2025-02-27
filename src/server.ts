@@ -11,7 +11,12 @@ import {
 import loadTools from '@app/openapi/loadTools';
 import readSpecs from '@app/openapi/specs';
 import { API } from '@app/types';
-import { Http, interpolateUrl, logger } from '@app/utils';
+import {
+  Http,
+  interpolateUrl,
+  logger,
+  toolRequiresAccountSid,
+} from '@app/utils';
 
 type Environment = 'dev' | 'stage' | 'prod';
 
@@ -36,6 +41,8 @@ export default class TwilioOpenAPIMCPServer {
 
   private http: Http;
 
+  private readonly accountSid: string;
+
   private env: Environment;
 
   private readonly logger;
@@ -49,6 +56,7 @@ export default class TwilioOpenAPIMCPServer {
     this.env = config.env ?? 'prod';
     this.logger = logger.child({ module: 'TwilioOpenAPIMCPServer' });
 
+    this.accountSid = config.accountSid;
     this.http = new Http({
       credentials: {
         accountSid: config.accountSid,
@@ -65,10 +73,14 @@ export default class TwilioOpenAPIMCPServer {
     this.logger.info('Twilio OpenAPI MCP server started');
   }
 
+  /**
+   * Make a request to the API
+   * @param api
+   * @param body
+   * @private
+   */
   private async makeRequest(api: API, body?: Record<string, unknown>) {
     const url = interpolateUrl(api.path, body);
-    logger.info('ALOHA');
-    logger.info(url);
 
     if (api.method === 'GET') {
       return this.http.get(url);
@@ -85,6 +97,10 @@ export default class TwilioOpenAPIMCPServer {
     throw new Error(`Unsupported method: ${api.method}`);
   }
 
+  /**
+   * Setup request handlers
+   * @private
+   */
   private setupHandlers(): void {
     this.server.setRequestHandler(ListToolsRequestSchema, async () => {
       return {
@@ -97,15 +113,23 @@ export default class TwilioOpenAPIMCPServer {
       const id: string = name.split('---')[1]?.trim();
       const tool = this.tools.get(id);
       const api = this.apis.get(id);
+      const body = (request.params.arguments as Record<string, unknown>) ?? {};
 
       if (!tool || !api) {
         throw new Error(`Tool (${id}) not found: ${name}`);
       }
 
-      const response = await this.makeRequest(
-        api,
-        request.params.arguments as Record<string, unknown>,
-      );
+      const { requiresAccountSid, accountSidKey } =
+        toolRequiresAccountSid(tool);
+      const providedSid = (body?.[accountSidKey] ?? '') as unknown;
+      const hasAccountSid =
+        typeof providedSid === 'string' &&
+        /^AC[a-fA-F0-9]{32}$/.test(providedSid);
+      if (requiresAccountSid && !hasAccountSid) {
+        body[accountSidKey] = this.accountSid;
+      }
+
+      const response = await this.makeRequest(api, body);
       if (!response.ok) {
         this.logger.error({
           message: 'failed to make request',
@@ -127,6 +151,10 @@ export default class TwilioOpenAPIMCPServer {
     });
   }
 
+  /**
+   * Load tools from the OpenAPI specs
+   * @private
+   */
   private async loadTools() {
     const apiDir = join(this.rootDir, 'open-api', 'spec');
     const specs = await readSpecs(apiDir, apiDir);

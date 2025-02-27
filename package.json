@@ -31,7 +31,6 @@
   "dependencies": {
     "@apidevtools/swagger-parser": "^10.1.1",
     "@modelcontextprotocol/sdk": "^1.6.0",
-    "http-errors": "^2.0.0",
     "nanoid": "^5.1.2",
     "node-fetch": "^3.3.2",
     "openapi-types": "^12.1.3",
@@ -42,7 +41,6 @@
   },
   "devDependencies": {
     "@ianvs/prettier-plugin-sort-imports": "^4.1.1",
-    "@types/http-errors": "^2.0.4",
     "@types/node": "^22.13.5",
     "@typescript-eslint/eslint-plugin": "^7.4.0",
     "@typescript-eslint/parser": "^7.4.0",
