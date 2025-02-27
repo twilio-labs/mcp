@@ -12,6 +12,7 @@ import loadTools from '@app/openapi/loadTools';
 import readSpecs from '@app/openapi/specs';
 import { API } from '@app/types';
 import {
+  Credentials,
   Http,
   interpolateUrl,
   logger,
@@ -26,7 +27,7 @@ type Configuration = {
     version: string;
   };
   accountSid: string;
-  authToken: string;
+  credentials: Credentials;
   env?: Environment;
 };
 
@@ -58,10 +59,7 @@ export default class TwilioOpenAPIMCPServer {
 
     this.accountSid = config.accountSid;
     this.http = new Http({
-      credentials: {
-        accountSid: config.accountSid,
-        authToken: config.authToken,
-      },
+      credentials: config.credentials,
     });
   }
 

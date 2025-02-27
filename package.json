@@ -18,9 +18,9 @@
     "build": "tsc -p tsconfig.json && tsc-alias && node -e \"require('fs').chmodSync('build/index.js', '755')\"",
     "lint": "eslint src/ --ext .ts",
     "lint:fix": "eslint src/ --ext .ts --fix",
-    "prepare": "npm run prepare:husky && npm run prepare:open-api",
+    "prepare": "npm run prepare:husky && npm run prepare:twilio-oai",
     "prepare:husky": "husky",
-    "prepare:open-api": "[ -d open-api ] && (cd open-api && git pull) || git clone https://github.com/twilio/twilio-oai",
+    "prepare:twilio-oai": "[ -d twilio-oai ] && (cd twilio-oai && git pull) || git clone https://github.com/twilio/twilio-oai",
     "start": "node build"
   },
   "lint-staged": {
@@ -31,6 +31,7 @@
   "dependencies": {
     "@apidevtools/swagger-parser": "^10.1.1",
     "@modelcontextprotocol/sdk": "^1.6.0",
+    "minimist": "^1.2.8",
     "nanoid": "^5.1.2",
     "node-fetch": "^3.3.2",
     "openapi-types": "^12.1.3",
@@ -41,6 +42,7 @@
   },
   "devDependencies": {
     "@ianvs/prettier-plugin-sort-imports": "^4.1.1",
+    "@types/minimist": "^1.2.5",
     "@types/node": "^22.13.5",
     "@typescript-eslint/eslint-plugin": "^7.4.0",
     "@typescript-eslint/parser": "^7.4.0",
