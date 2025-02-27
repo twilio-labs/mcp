@@ -20,7 +20,7 @@
     "lint:fix": "eslint src/ --ext .ts --fix",
     "prepare": "npm run prepare:husky && npm run prepare:open-api",
     "prepare:husky": "husky",
-    "prepare:open-api": "[ -d open-api ] && (cd open-api && git pull) || git clone https://code.hq.twilio.com/twilio/open-api",
+    "prepare:open-api": "[ -d open-api ] && (cd open-api && git pull) || git clone https://github.com/twilio/twilio-oai",
     "start": "node build"
   },
   "lint-staged": {
@@ -44,7 +44,6 @@
     "@types/node": "^22.13.5",
     "@typescript-eslint/eslint-plugin": "^7.4.0",
     "@typescript-eslint/parser": "^7.4.0",
-    "dotenv": "^16.4.5",
     "eslint": "^8.57.0",
     "eslint-config-airbnb-base": "15.0.0",
     "eslint-config-airbnb-typescript": "^18.0.0",

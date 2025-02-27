@@ -15,13 +15,15 @@ const trimSlashes = (str: string) => {
 export default function loadTools(specs: OpenAPISpec[]) {
   const tools: Map<string, Tool> = new Map();
   const apis: Map<string, API> = new Map();
+  let length = 0;
 
   specs
     .filter((spec) => spec.document.paths)
     .forEach((spec) => {
       return Object.entries(spec.document.paths as OpenAPI.Operation).forEach(
         ([path, items]) => {
-          const baseURL = items.servers[0].url ?? '';
+          const baseURL = items.servers?.[0]?.url ?? '';
+
           return Object.entries(items)
             .filter(([method]) => SUPPORTED_METHODS.includes(method.toString()))
             .forEach(([method, op]) => {
@@ -69,6 +71,7 @@ export default function loadTools(specs: OpenAPISpec[]) {
                   });
               }
 
+              length += tool.name.length + (tool.description?.length ?? 0);
               const requestBody =
                 // @ts-ignore
                 operation.requestBody as OpenAPIV3.RequestBodyObject;

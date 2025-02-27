@@ -156,7 +156,7 @@ export default class TwilioOpenAPIMCPServer {
    * @private
    */
   private async loadTools() {
-    const apiDir = join(this.rootDir, 'open-api', 'spec');
+    const apiDir = join(this.rootDir, 'twilio-oai', 'spec', 'yaml');
     const specs = await readSpecs(apiDir, apiDir);
     const { tools, apis } = loadTools(specs);
     this.tools = tools;
