@@ -2,9 +2,9 @@
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 
 import TwilioOpenAPIMCPServer from '@app/server';
-import { logger } from '@app/utils';
+import { args, logger } from '@app/utils';
 
-const [accountSid, authToken] = process.argv.slice(2);
+const { accountSid, apiSecret, apiKey } = args(process.argv);
 
 const server = new TwilioOpenAPIMCPServer({
   server: {
@@ -12,7 +12,10 @@ const server = new TwilioOpenAPIMCPServer({
     version: '0.0.1',
   },
   accountSid,
-  authToken,
+  credentials: {
+    apiKey,
+    apiSecret,
+  },
 });
 
 async function main() {

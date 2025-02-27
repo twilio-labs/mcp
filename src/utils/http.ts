@@ -30,11 +30,13 @@ type HttpRequest = RequestOption & {
   body?: Record<string, unknown>;
 };
 
+export type Credentials = {
+  apiKey: string;
+  apiSecret: string;
+};
+
 type Configuration = {
-  credentials: {
-    accountSid: string;
-    authToken: string;
-  };
+  credentials: Credentials;
 };
 
 export default class Http {
@@ -44,7 +46,7 @@ export default class Http {
 
   constructor(config: Configuration) {
     const credentials = Buffer.from(
-      `${config.credentials.accountSid}:${config.credentials.authToken}`,
+      `${config.credentials.apiKey}:${config.credentials.apiSecret}`,
     ).toString('base64');
     this.defaultRequest = {
       headers: {
