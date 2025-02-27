@@ -119,9 +119,6 @@ export default class TwilioOpenAPIMCPServer {
         throw new Error(`Tool (${id}) not found: ${name}`);
       }
 
-      this.logger.info('ALOHA');
-      this.logger.info(JSON.stringify(body));
-
       const { requiresAccountSid, accountSidKey } =
         toolRequiresAccountSid(tool);
       const providedSid = (body?.[accountSidKey] ?? '') as unknown;
