@@ -22,6 +22,6 @@ async function main() {
 }
 
 main().catch((error) => {
-  logger.error('Fatal error in main():', error);
+  logger.error(`Fatal error in main(): ${error}`);
   process.exit(1);
 });

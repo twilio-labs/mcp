@@ -21,7 +21,8 @@ export default function loadTools(specs: OpenAPISpec[]) {
     .forEach((spec) => {
       return Object.entries(spec.document.paths as OpenAPI.Operation).forEach(
         ([path, items]) => {
-          const baseURL = items.servers[0].url ?? '';
+          const baseURL = items.servers?.[0]?.url ?? '';
+
           return Object.entries(items)
             .filter(([method]) => SUPPORTED_METHODS.includes(method.toString()))
             .forEach(([method, op]) => {

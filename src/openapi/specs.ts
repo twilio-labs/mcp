@@ -15,10 +15,6 @@ export default async function readSpecs(
   dir: string,
   baseDir: string = dir,
 ): Promise<OpenAPISpec[]> {
-  if (dir.includes('/preview/')) {
-    return [];
-  }
-
   const entries = fs.readdirSync(dir, { withFileTypes: true });
   const specs = await Promise.all(
     entries.map(async (entry) => {
@@ -26,10 +22,6 @@ export default async function readSpecs(
 
       if (entry.isDirectory()) {
         return readSpecs(fullPath, baseDir);
-      }
-
-      if (entry.isFile() && entry.name !== 'openapi.yaml') {
-        return [];
       }
 
       const relativePath = path.relative(baseDir, fullPath);
