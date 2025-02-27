@@ -15,7 +15,6 @@ const trimSlashes = (str: string) => {
 export default function loadTools(specs: OpenAPISpec[]) {
   const tools: Map<string, Tool> = new Map();
   const apis: Map<string, API> = new Map();
-  let length = 0;
 
   specs
     .filter((spec) => spec.document.paths)
@@ -71,7 +70,6 @@ export default function loadTools(specs: OpenAPISpec[]) {
                   });
               }
 
-              length += tool.name.length + (tool.description?.length ?? 0);
               const requestBody =
                 // @ts-ignore
                 operation.requestBody as OpenAPIV3.RequestBodyObject;
