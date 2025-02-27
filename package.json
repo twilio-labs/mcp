@@ -5,7 +5,8 @@
   "license": "ISC",
   "author": "",
   "type": "module",
-  "main": "index.js",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
   "bin": {
     "twilio-mcp-server": "./build/index.js"
   },
@@ -30,12 +31,18 @@
   "dependencies": {
     "@apidevtools/swagger-parser": "^10.1.1",
     "@modelcontextprotocol/sdk": "^1.6.0",
+    "http-errors": "^2.0.0",
+    "nanoid": "^5.1.2",
+    "node-fetch": "^3.3.2",
     "openapi-types": "^12.1.3",
+    "pino": "^9.6.0",
+    "pino-pretty": "^13.0.0",
     "twilio": "^5.4.5",
     "zod": "^3.24.2"
   },
   "devDependencies": {
     "@ianvs/prettier-plugin-sort-imports": "^4.1.1",
+    "@types/http-errors": "^2.0.4",
     "@types/node": "^22.13.5",
     "@typescript-eslint/eslint-plugin": "^7.4.0",
     "@typescript-eslint/parser": "^7.4.0",
