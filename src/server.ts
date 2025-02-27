@@ -36,6 +36,8 @@ export default class TwilioOpenAPIMCPServer {
 
   private http: Http;
 
+  private readonly accountSid: string;
+
   private env: Environment;
 
   private readonly logger;
@@ -49,6 +51,7 @@ export default class TwilioOpenAPIMCPServer {
     this.env = config.env ?? 'prod';
     this.logger = logger.child({ module: 'TwilioOpenAPIMCPServer' });
 
+    this.accountSid = config.accountSid;
     this.http = new Http({
       credentials: {
         accountSid: config.accountSid,
@@ -67,8 +70,6 @@ export default class TwilioOpenAPIMCPServer {
 
   private async makeRequest(api: API, body?: Record<string, unknown>) {
     const url = interpolateUrl(api.path, body);
-    logger.info('ALOHA');
-    logger.info(url);
 
     if (api.method === 'GET') {
       return this.http.get(url);
@@ -85,6 +86,22 @@ export default class TwilioOpenAPIMCPServer {
     throw new Error(`Unsupported method: ${api.method}`);
   }
 
+  private static requiresAccountSid(tool: Tool) {
+    const requiresAccountSid =
+      tool.inputSchema.properties?.AccountSid ||
+      tool.inputSchema.properties?.accountSid;
+
+    if (!requiresAccountSid) {
+      return { requiresAccountSid: false, accountSidKey: '' };
+    }
+
+    if (tool.inputSchema.properties?.AccountSid) {
+      return { requiresAccountSid: true, accountSidKey: 'AccountSid' };
+    }
+
+    return { requiresAccountSid: true, accountSidKey: 'accountSid' };
+  }
+
   private setupHandlers(): void {
     this.server.setRequestHandler(ListToolsRequestSchema, async () => {
       return {
@@ -97,15 +114,26 @@ export default class TwilioOpenAPIMCPServer {
       const id: string = name.split('---')[1]?.trim();
       const tool = this.tools.get(id);
       const api = this.apis.get(id);
+      const body = (request.params.arguments as Record<string, unknown>) ?? {};
 
       if (!tool || !api) {
         throw new Error(`Tool (${id}) not found: ${name}`);
       }
 
-      const response = await this.makeRequest(
-        api,
-        request.params.arguments as Record<string, unknown>,
-      );
+      this.logger.info('ALOHA');
+      this.logger.info(JSON.stringify(body));
+
+      const { requiresAccountSid, accountSidKey } =
+        TwilioOpenAPIMCPServer.requiresAccountSid(tool);
+      const providedSid = (body?.[accountSidKey] ?? '') as unknown;
+      const hasAccountSid =
+        typeof providedSid === 'string' &&
+        /^AC[a-fA-F0-9]{32}$/.test(providedSid);
+      if (requiresAccountSid && !hasAccountSid) {
+        body[accountSidKey] = this.accountSid;
+      }
+
+      const response = await this.makeRequest(api, body);
       if (!response.ok) {
         this.logger.error({
           message: 'failed to make request',
