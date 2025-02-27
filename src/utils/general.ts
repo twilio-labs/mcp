@@ -1,4 +1,10 @@
-// eslint-disable-next-line import/prefer-default-export
+import { Tool } from '@modelcontextprotocol/sdk/types.js';
+
+/**
+ * Interpolate URL with params
+ * @param url
+ * @param params
+ */
 export const interpolateUrl = (
   url: string,
   params?: Record<string, unknown>,
@@ -27,4 +33,24 @@ export const interpolateUrl = (
 
     return `{${key}}`;
   });
+};
+
+/**
+ * Check if a tool requires an AccountSid
+ * @param tool
+ */
+export const toolRequiresAccountSid = (tool: Tool) => {
+  const requiresAccountSid =
+    tool.inputSchema.properties?.AccountSid ||
+    tool.inputSchema.properties?.accountSid;
+
+  if (!requiresAccountSid) {
+    return { requiresAccountSid: false, accountSidKey: '' };
+  }
+
+  if (tool.inputSchema.properties?.AccountSid) {
+    return { requiresAccountSid: true, accountSidKey: 'AccountSid' };
+  }
+
+  return { requiresAccountSid: true, accountSidKey: 'accountSid' };
 };

@@ -11,7 +11,12 @@ import {
 import loadTools from '@app/openapi/loadTools';
 import readSpecs from '@app/openapi/specs';
 import { API } from '@app/types';
-import { Http, interpolateUrl, logger } from '@app/utils';
+import {
+  Http,
+  interpolateUrl,
+  logger,
+  toolRequiresAccountSid,
+} from '@app/utils';
 
 type Environment = 'dev' | 'stage' | 'prod';
 
@@ -68,6 +73,12 @@ export default class TwilioOpenAPIMCPServer {
     this.logger.info('Twilio OpenAPI MCP server started');
   }
 
+  /**
+   * Make a request to the API
+   * @param api
+   * @param body
+   * @private
+   */
   private async makeRequest(api: API, body?: Record<string, unknown>) {
     const url = interpolateUrl(api.path, body);
 
@@ -86,22 +97,10 @@ export default class TwilioOpenAPIMCPServer {
     throw new Error(`Unsupported method: ${api.method}`);
   }
 
-  private static requiresAccountSid(tool: Tool) {
-    const requiresAccountSid =
-      tool.inputSchema.properties?.AccountSid ||
-      tool.inputSchema.properties?.accountSid;
-
-    if (!requiresAccountSid) {
-      return { requiresAccountSid: false, accountSidKey: '' };
-    }
-
-    if (tool.inputSchema.properties?.AccountSid) {
-      return { requiresAccountSid: true, accountSidKey: 'AccountSid' };
-    }
-
-    return { requiresAccountSid: true, accountSidKey: 'accountSid' };
-  }
-
+  /**
+   * Setup request handlers
+   * @private
+   */
   private setupHandlers(): void {
     this.server.setRequestHandler(ListToolsRequestSchema, async () => {
       return {
@@ -124,7 +123,7 @@ export default class TwilioOpenAPIMCPServer {
       this.logger.info(JSON.stringify(body));
 
       const { requiresAccountSid, accountSidKey } =
-        TwilioOpenAPIMCPServer.requiresAccountSid(tool);
+        toolRequiresAccountSid(tool);
       const providedSid = (body?.[accountSidKey] ?? '') as unknown;
       const hasAccountSid =
         typeof providedSid === 'string' &&
@@ -155,6 +154,10 @@ export default class TwilioOpenAPIMCPServer {
     });
   }
 
+  /**
+   * Load tools from the OpenAPI specs
+   * @private
+   */
   private async loadTools() {
     const apiDir = join(this.rootDir, 'open-api', 'spec');
     const specs = await readSpecs(apiDir, apiDir);
