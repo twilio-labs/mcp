@@ -3,6 +3,8 @@ import { nanoid } from 'nanoid';
 import { OpenAPI, OpenAPIV3 } from 'openapi-types';
 
 import { API, HttpMethod } from '@app/types.js';
+import { Service } from '@app/utils/args';
+import logger from '@app/utils/logger.js';
 
 import { OpenAPISpec } from './specs.js';
 
@@ -12,11 +14,18 @@ const trimSlashes = (str: string) => {
   return str.replace(/^\/+|\/+$/g, '');
 };
 
-export default function loadTools(specs: OpenAPISpec[]) {
+export default function loadTools(specs: OpenAPISpec[], services: Service[]) {
   const tools: Map<string, Tool> = new Map();
   const apis: Map<string, API> = new Map();
 
   specs
+    .filter((spec) => {
+      return services.some(
+        (service) =>
+          service.name === spec.service.name &&
+          service.version === spec.service.version,
+      );
+    })
     .filter((spec) => spec.document.paths)
     .forEach((spec) => {
       return Object.entries(spec.document.paths as OpenAPI.Operation).forEach(

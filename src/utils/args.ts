@@ -2,10 +2,16 @@ import minimist from 'minimist';
 
 import logger from './logger';
 
+export type Service = {
+  name: string;
+  version: string;
+};
+
 interface ParsedArgs {
   accountSid: string;
   apiKey: string;
   apiSecret: string;
+  services: Service[];
 }
 
 const args = (argv: string[]): ParsedArgs => {
@@ -14,11 +20,12 @@ const args = (argv: string[]): ParsedArgs => {
       a: 'accountSid',
       k: 'apiKey',
       s: 'apiSecret',
+      t: 'services',
     },
-    string: ['accountSid', 'apiKey', 'apiSecret'],
+    string: ['accountSid', 'apiKey', 'apiSecret', 'services'],
   });
 
-  const { accountSid, apiKey, apiSecret } = parsed;
+  const { accountSid, apiKey, apiSecret, services } = parsed;
 
   if (!accountSid) {
     logger.error('Error: --accountSid is required.');
@@ -32,8 +39,17 @@ const args = (argv: string[]): ParsedArgs => {
 
   // TODO: Brian's use oe secrets will be here to replace apiKey/apiSecret
 
-  // @ts-ignore
-  return parsed;
+  const servicesList: string[] = services ? services.split(',') : [];
+
+  return {
+    accountSid,
+    apiKey,
+    apiSecret,
+    services: servicesList.map((s) => {
+      const [name, version] = s.split('_');
+      return { name, version };
+    }),
+  };
 };
 
 export default args;

@@ -4,13 +4,14 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import TwilioOpenAPIMCPServer from '@app/server';
 import { args, logger } from '@app/utils';
 
-const { accountSid, apiSecret, apiKey } = args(process.argv);
+const { accountSid, apiSecret, apiKey, services } = args(process.argv);
 
 const server = new TwilioOpenAPIMCPServer({
   server: {
     name: 'twilio-server',
     version: '0.0.1',
   },
+  services,
   accountSid,
   credentials: {
     apiKey,
