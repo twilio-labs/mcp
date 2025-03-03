@@ -9,7 +9,6 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "sourceMap": true,
-    "strict": true,
     "declaration": true,
     "outDir": "./build",
     "rootDir": "./src",
@@ -17,16 +16,10 @@
     "paths": {
       "@app/*": ["src/*"]
     },
-    "types": [
-      "node"
-    ]
+    "types": ["node"]
   },
-  "include": [
-    "src/**/*"
-  ],
-  "exclude": [
-    "node_modules"
-  ],
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"],
   "tsc-alias": {
     "resolveFullPaths": true,
     "verbose": false

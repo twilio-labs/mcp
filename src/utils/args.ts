@@ -1,54 +1,35 @@
 import minimist from 'minimist';
 
-import logger from './logger';
-
 export type Service = {
   name: string;
   version: string;
 };
 
 interface ParsedArgs {
-  accountSid: string;
-  apiKey: string;
-  apiSecret: string;
+  command: string;
   services: Service[];
 }
 
-const args = (argv: string[]): ParsedArgs => {
-  const parsed = minimist(argv.slice(2), {
+const args = async (argv: string[]): Promise<ParsedArgs> => {
+  const [command, ...args] = process.argv.slice(2);
+
+  const parsed = minimist(args, {
     alias: {
-      a: 'accountSid',
-      k: 'apiKey',
-      s: 'apiSecret',
       t: 'services',
     },
-    string: ['accountSid', 'apiKey', 'apiSecret', 'services'],
+    string: ['services'],
   });
 
-  const { accountSid, apiKey, apiSecret, services } = parsed;
-
-  if (!accountSid) {
-    logger.error('Error: --accountSid is required.');
-    process.exit(1);
-  }
-
-  if ((apiKey && !apiSecret) || (!apiKey && apiSecret)) {
-    logger.error('Error: --apiKey and --apiSecret must be provided together.');
-    process.exit(1);
-  }
-
-  // TODO: Brian's use oe secrets will be here to replace apiKey/apiSecret
+  const { services } = parsed;
 
   const servicesList: string[] = services ? services.split(',') : [];
 
   return {
-    accountSid,
-    apiKey,
-    apiSecret,
     services: servicesList.map((s) => {
       const [name, version] = s.split('_');
       return { name, version };
     }),
+    command,
   };
 };
 
