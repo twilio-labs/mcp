@@ -4,9 +4,10 @@ import path from 'path';
 import SwaggerParser from '@apidevtools/swagger-parser';
 import { OpenAPI } from 'openapi-types';
 
+import { Service } from '@app/utils/args';
+
 export interface OpenAPISpec {
-  service: string;
-  version: string;
+  service: Service;
   path: string;
   document: OpenAPI.Document;
 }
@@ -27,11 +28,14 @@ export default async function readSpecs(
       const relativePath = path.relative(baseDir, fullPath);
       const parts = relativePath.split(path.sep);
       const document = await SwaggerParser.bundle(fullPath);
+      const match = parts[0].match(/^twilio_(.*?)_(v\d+)\.yaml$/);
 
       return [
         {
-          service: parts[0],
-          version: parts[1],
+          service: {
+            name: match?.[1] ?? parts[0],
+            version: match?.[2] ?? parts[1],
+          },
           path: fullPath,
           document,
         },

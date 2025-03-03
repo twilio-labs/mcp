@@ -18,6 +18,7 @@ import {
   logger,
   toolRequiresAccountSid,
 } from '@app/utils';
+import { Service } from '@app/utils/args';
 
 type Environment = 'dev' | 'stage' | 'prod';
 
@@ -26,6 +27,7 @@ type Configuration = {
     name: string;
     version: string;
   };
+  services: Service[];
   accountSid: string;
   credentials: Credentials;
   env?: Environment;
@@ -35,6 +37,8 @@ export default class TwilioOpenAPIMCPServer {
   private rootDir = join(dirname(fileURLToPath(import.meta.url)), '..');
 
   public readonly server: Server;
+
+  private services: Service[];
 
   private tools: Map<string, Tool> = new Map();
 
@@ -61,6 +65,10 @@ export default class TwilioOpenAPIMCPServer {
     this.http = new Http({
       credentials: config.credentials,
     });
+    this.services = config.services;
+    if (this.services.length === 0) {
+      this.services = [{ name: 'api', version: 'v2010' }];
+    }
   }
 
   public async start(transport: any) {
@@ -156,7 +164,7 @@ export default class TwilioOpenAPIMCPServer {
   private async loadTools() {
     const apiDir = join(this.rootDir, 'twilio-oai', 'spec', 'yaml');
     const specs = await readSpecs(apiDir, apiDir);
-    const { tools, apis } = loadTools(specs);
+    const { tools, apis } = loadTools(specs, this.services);
     this.tools = tools;
     this.apis = apis;
   }
