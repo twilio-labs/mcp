@@ -21,7 +21,7 @@
     "prepare": "npm run prepare:husky && npm run prepare:twilio-oai",
     "prepare:husky": "husky",
     "prepare:twilio-oai": "[ -d twilio-oai ] && (cd twilio-oai && git pull) || git clone https://github.com/twilio/twilio-oai",
-    "start": "node build"
+    "start": "node build start"
   },
   "lint-staged": {
     "src/**/*.ts": [

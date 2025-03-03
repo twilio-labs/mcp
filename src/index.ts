@@ -38,8 +38,9 @@ if (command === 'start') {
     logger.error(`Fatal error in main(): ${error}`);
     process.exit(1);
   });
-}
-
-if (command === 'init') {
+} else if (command === 'init') {
   await init();
+} else {
+  logger.error(`Unknown command: ${command}. Expected 'init' or 'start'.`);
+  process.exit(1);
 }
