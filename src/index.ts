@@ -11,7 +11,10 @@ if (command === 'start') {
     process.exit(1);
   });
 } else if (command === 'init') {
-  await init();
+  init().catch((error) => {
+    logger.error(`Fatal error in init(): ${error}`);
+    process.exit(1);
+  });
 } else {
   logger.error(`Unknown command: ${command}. Expected 'init' or 'start'.`);
   process.exit(1);
