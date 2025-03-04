@@ -18,8 +18,6 @@ if (!credentials) {
   process.exit(1);
 }
 
-console.log(credentials);
-
 const server = new TwilioOpenAPIMCPServer({
   server: {
     name: 'twilio-server',
