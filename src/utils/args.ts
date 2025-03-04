@@ -8,6 +8,9 @@ export type Service = {
 interface ParsedArgs {
   command: string;
   services: Service[];
+  accountSid?: string;
+  apiKey?: string;
+  apiSecret?: string;
 }
 
 const args = async (argv: string[]): Promise<ParsedArgs> => {
@@ -15,12 +18,15 @@ const args = async (argv: string[]): Promise<ParsedArgs> => {
 
   const parsed = minimist(args, {
     alias: {
+      a: 'accountSid',
+      k: 'apiKey',
+      s: 'apiSecret',
       t: 'services',
     },
-    string: ['services'],
+    string: ['accountSid', 'apiKey', 'apiSecret', 'services'],
   });
 
-  const { services } = parsed;
+  const { services, accountSid, apiKey, apiSecret } = parsed;
 
   const servicesList: string[] = services ? services.split(',') : [];
 
@@ -30,6 +36,9 @@ const args = async (argv: string[]): Promise<ParsedArgs> => {
       return { name, version };
     }),
     command,
+    accountSid,
+    apiKey,
+    apiSecret,
   };
 };
 

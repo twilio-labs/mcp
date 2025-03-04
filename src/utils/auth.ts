@@ -1,6 +1,6 @@
 import keytar from 'keytar';
 
-type Credentials = {
+export type AccountCredentials = {
   accountSid: string;
   apiKey: string;
   apiSecret: string;
@@ -26,7 +26,7 @@ const setCredentials = async (
   );
 };
 
-const getCredentials = async (): Promise<Credentials | null> => {
+const getCredentials = async (): Promise<AccountCredentials | null> => {
   const credentials = await keytar.findCredentials('twilio-mcp-server');
 
   if (!credentials.length) {

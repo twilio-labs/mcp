@@ -1,16 +1,24 @@
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 
 import TwilioOpenAPIMCPServer from '@app/server';
-import { args, auth, logger } from '@app/utils';
+import { args, auth, logger, type AccountCredentials } from '@app/utils';
 
-const credentials = await auth.getCredentials();
+let credentials: AccountCredentials | null;
 
-const { services } = await args(process.argv);
+const { services, accountSid, apiKey, apiSecret } = await args(process.argv);
+
+if (accountSid && apiKey && apiSecret) {
+  credentials = { accountSid, apiKey, apiSecret };
+} else {
+  credentials = await auth.getCredentials();
+}
 
 if (!credentials) {
   logger.error('Error: No credentials found.');
   process.exit(1);
 }
+
+console.log(credentials);
 
 const server = new TwilioOpenAPIMCPServer({
   server: {
