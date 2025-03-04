@@ -75,8 +75,6 @@ export default class TwilioOpenAPIMCPServer {
     await this.loadTools();
     this.setupHandlers();
     await this.server.connect(transport);
-
-    this.logger.info('Twilio OpenAPI MCP server started');
   }
 
   /**
