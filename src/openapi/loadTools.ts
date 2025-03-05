@@ -1,10 +1,9 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
 import { nanoid } from 'nanoid';
-import { OpenAPI, OpenAPIV3 } from 'openapi-types';
+import { OpenAPIV3 } from 'openapi-types';
 
 import { API, HttpMethod } from '@app/types.js';
 import { Service } from '@app/utils/args';
-import logger from '@app/utils/logger.js';
 
 import { OpenAPISpec } from './specs.js';
 
@@ -28,69 +27,77 @@ export default function loadTools(specs: OpenAPISpec[], services: Service[]) {
     })
     .filter((spec) => spec.document.paths)
     .forEach((spec) => {
-      return Object.entries(spec.document.paths as OpenAPI.Operation).forEach(
-        ([path, items]) => {
-          const baseURL = items.servers?.[0]?.url ?? '';
+      const { title } = spec.document.info;
+      const description =
+        spec.document.info.description?.replace(/\.$/, '') ?? '';
 
-          return Object.entries(items)
-            .filter(([method]) => SUPPORTED_METHODS.includes(method.toString()))
-            .forEach(([method, op]) => {
-              const operation = op as OpenAPI.Operation;
-              if (!operation) {
-                return;
-              }
+      return Object.entries(spec.document.paths).forEach(([path, items]) => {
+        if (!items) {
+          return;
+        }
 
-              const id = nanoid(8);
-              const name = `${operation.operationId}---${id}`;
+        const baseURL = items?.servers?.[0]?.url ?? '';
 
-              const tool: Tool = {
-                name,
-                description:
-                  operation.description ||
-                  `Make a ${method.toUpperCase()} request to ${path}`,
-                inputSchema: {
-                  type: 'object',
-                  properties: {},
-                },
-              };
-              const api: API = {
-                method: method.toUpperCase() as HttpMethod,
-                path: `${trimSlashes(baseURL)}/${trimSlashes(path)}`,
-                urlencoded: false,
-              };
+        // eslint-disable-next-line consistent-return
+        return Object.entries(items)
+          .filter(([method]) => SUPPORTED_METHODS.includes(method.toString()))
+          .forEach(([method, op]) => {
+            const operation = op as OpenAPIV3.OperationObject;
+            if (!operation) {
+              return;
+            }
 
-              if (operation.parameters) {
-                operation.parameters
-                  .filter((param) => 'name' in param && 'in' in param)
-                  .forEach((param) => {
+            const id = nanoid(8);
+            const name = `${operation.operationId}---${id}`;
+            const toolDescription =
+              operation.description ||
+              `Make a ${method.toUpperCase()} request to ${path}`;
+
+            const tool: Tool = {
+              name,
+              description: `${title}: ${description}. ${toolDescription}`,
+              inputSchema: {
+                type: 'object',
+                properties: {},
+              },
+            };
+            const api: API = {
+              method: method.toUpperCase() as HttpMethod,
+              path: `${trimSlashes(baseURL)}/${trimSlashes(path)}`,
+              urlencoded: false,
+            };
+
+            if (operation.parameters) {
+              operation.parameters
+                .filter((param) => 'name' in param && 'in' in param)
+                .forEach((param) => {
+                  tool.inputSchema.properties = {};
+                  const schema = param.schema as OpenAPIV3.SchemaObject;
+
+                  tool.inputSchema.properties[param.name] = {
+                    type: schema.type ?? 'string',
+                    description: param.description || `${param.name} parameter`,
+                  };
+
+                  if (param.required) {
+                    tool.inputSchema.required = tool.inputSchema.required || [];
                     // @ts-ignore
-                    tool.inputSchema.properties[param.name] = {
-                      type: param.schema.type || 'string',
-                      description:
-                        param.description || `${param.name} parameter`,
-                    };
+                    tool.inputSchema.required.push(param.name);
+                  }
+                });
+            }
 
-                    if (param.required) {
-                      tool.inputSchema.required =
-                        tool.inputSchema.required || [];
-                      // @ts-ignore
-                      tool.inputSchema.required.push(param.name);
-                    }
-                  });
-              }
+            const requestBody =
+              // @ts-ignore
+              operation.requestBody as OpenAPIV3.RequestBodyObject;
+            if (requestBody?.content?.['application/x-www-form-urlencoded']) {
+              api.urlencoded = true;
+            }
 
-              const requestBody =
-                // @ts-ignore
-                operation.requestBody as OpenAPIV3.RequestBodyObject;
-              if (requestBody?.content?.['application/x-www-form-urlencoded']) {
-                api.urlencoded = true;
-              }
-
-              tools.set(id, tool);
-              apis.set(id, api);
-            });
-        },
-      );
+            tools.set(id, tool);
+            apis.set(id, api);
+          });
+      });
     });
 
   return { tools, apis };
