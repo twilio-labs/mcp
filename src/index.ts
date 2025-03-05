@@ -1,31 +1,21 @@
 #!/usr/bin/env node
-import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-
-import TwilioOpenAPIMCPServer from '@app/server';
+import init from '@app/init';
+import main from '@app/main';
 import { args, logger } from '@app/utils';
 
-const { accountSid, apiSecret, apiKey, services } = args(process.argv);
+const { command } = await args(process.argv);
 
-const server = new TwilioOpenAPIMCPServer({
-  server: {
-    name: 'twilio-server',
-    version: '0.0.1',
-  },
-  services,
-  accountSid,
-  credentials: {
-    apiKey,
-    apiSecret,
-  },
-});
-
-async function main() {
-  const transport = new StdioServerTransport();
-  await server.start(transport);
-  logger.info('Twilio MCP Server running on stdio');
-}
-
-main().catch((error) => {
-  logger.error(`Fatal error in main(): ${error}`);
+if (command === 'start') {
+  main().catch((error) => {
+    logger.error(`Fatal error in main(): ${error}`);
+    process.exit(1);
+  });
+} else if (command === 'init') {
+  init().catch((error) => {
+    logger.error(`Fatal error in init(): ${error}`);
+    process.exit(1);
+  });
+} else {
+  logger.error(`Unknown command: ${command}. Expected 'init' or 'start'.`);
   process.exit(1);
-});
+}
