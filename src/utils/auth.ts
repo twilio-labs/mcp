@@ -14,7 +14,9 @@ const setCredentials = async (
   const accounts = await keytar.findCredentials('twilio-mcp-server');
 
   if (accounts.length) {
+    // eslint-disable-next-line no-restricted-syntax
     for (const account of accounts) {
+      // eslint-disable-next-line no-await-in-loop
       await keytar.deletePassword('twilio-mcp-server', account.account);
     }
   }

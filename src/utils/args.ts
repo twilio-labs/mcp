@@ -13,8 +13,8 @@ interface ParsedArgs {
   apiSecret?: string;
 }
 
-const args = async (argv: string[]): Promise<ParsedArgs> => {
-  const [command, ...args] = process.argv.slice(2);
+const parsedArgs = async (argv: string[]): Promise<ParsedArgs> => {
+  const [command, ...args] = argv.slice(2);
 
   const parsed = minimist(args, {
     alias: {
@@ -42,4 +42,4 @@ const args = async (argv: string[]): Promise<ParsedArgs> => {
   };
 };
 
-export default args;
+export default parsedArgs;
