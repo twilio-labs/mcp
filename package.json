@@ -1,9 +1,9 @@
 {
-  "name": "twilio-mcp-server",
+  "name": "@twilioalpha/mcp",
   "version": "0.0.1",
-  "description": "",
+  "description": "This is a Model Context Protocol server that exposes all of Twilio APIs.",
   "license": "ISC",
-  "author": "",
+  "author": "Twilio",
   "type": "module",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -11,7 +11,8 @@
     "twilio-mcp-server": "./build/index.js"
   },
   "files": [
-    "build"
+    "build",
+    "twilio-oai/spec"
   ],
   "scripts": {
     "prebuild": "rm -rf build/",
