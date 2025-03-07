@@ -1,5 +1,5 @@
 {
-  "name": "@twilioalpha/mcp",
+  "name": "@twilio-alpha/mcp",
   "version": "0.0.1",
   "description": "This is a Model Context Protocol server that exposes all of Twilio APIs.",
   "license": "ISC",
