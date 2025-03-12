@@ -191,6 +191,12 @@ export default class Http {
     });
   }
 
+  /**
+   * Returns the body of the request
+   * @param body
+   * @param urlencoded
+   * @private
+   */
   private static getBody(
     body: Record<string, unknown>,
     urlencoded: boolean,
