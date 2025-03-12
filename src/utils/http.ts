@@ -1,4 +1,5 @@
 import fetch, { Response } from 'node-fetch';
+import qs from 'qs';
 
 import { HttpMethod } from '@app/types';
 
@@ -63,6 +64,8 @@ export default class Http {
    */
   private async make<T>(request: HttpRequest): Promise<HttpResponse<T>> {
     try {
+      logger.debug(`request object: ${JSON.stringify(request)}`);
+
       const options: RequestInit = {
         ...this.defaultRequest,
         method: request.method,
@@ -82,7 +85,7 @@ export default class Http {
       }
 
       if (['POST', 'PUT'].includes(request.method) && request.body) {
-        options.body = JSON.stringify(request.body);
+        options.body = Http.getBody(request.body, request.urlencoded ?? false);
       }
 
       logger.debug(
@@ -90,8 +93,6 @@ export default class Http {
           options,
         )}`,
       );
-
-      logger.debug(`request object: ${JSON.stringify(request)}`);
       const response = await fetch(request.url, options as any);
 
       if (!response.ok) {
@@ -188,5 +189,22 @@ export default class Http {
       method: 'DELETE',
       ...options,
     });
+  }
+
+  /**
+   * Returns the body of the request
+   * @param body
+   * @param urlencoded
+   * @private
+   */
+  private static getBody(
+    body: Record<string, unknown>,
+    urlencoded: boolean,
+  ): string {
+    if (urlencoded) {
+      return qs.stringify(body);
+    }
+
+    return JSON.stringify(body);
   }
 }
