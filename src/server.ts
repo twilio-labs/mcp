@@ -85,6 +85,7 @@ export default class TwilioOpenAPIMCPServer {
    */
   private async makeRequest(api: API, body?: Record<string, unknown>) {
     const url = interpolateUrl(api.path, body);
+    this.logger.info(`ALOHA making request to ${url}`);
 
     if (api.method === 'GET') {
       return this.http.get(url);
