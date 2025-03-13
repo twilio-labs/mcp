@@ -5,7 +5,9 @@ import { args, auth, logger, type AccountCredentials } from '@app/utils';
 
 let credentials: AccountCredentials | null;
 
-const { services, accountSid, apiKey, apiSecret } = await args(process.argv);
+const { services, accountSid, apiKey, apiSecret, tags } = await args(
+  process.argv,
+);
 
 if (accountSid && apiKey && apiSecret) {
   credentials = { accountSid, apiKey, apiSecret };
@@ -23,7 +25,10 @@ const server = new TwilioOpenAPIMCPServer({
     name: 'twilio-server',
     version: '0.0.1',
   },
-  services,
+  filter: {
+    services,
+    tags,
+  },
   accountSid: credentials.accountSid,
   credentials: {
     apiKey: credentials.apiKey,

@@ -16,6 +16,8 @@ You first need to `build` the server using `npm run build`. Then in the client, 
 --accountSid # the accountSid of your account
 --apiKey # the apiKey of your account
 --apiSecret # the apiSecret of your account
+--services # the name of the services you want to use - this correponds to the filename https://github.com/twilio/twilio-oai/tree/main/spec/yaml without the `twilio_` prefix - for example `chat_v3` for `twilio_chat_v3`
+--tags # The tag name as defined in each of the individual endpoints. If you want to filter by `tags` only, make sure you pass `--services ''` as an empty object.
 ```
 
 This step depends on the client implementation. For example, with Claude, you should edit `~/Library/Application\ Support/Claude/claude_desktop_config.json` and paste (change the path to your `build/index.js`):

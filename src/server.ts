@@ -10,7 +10,7 @@ import {
 
 import loadTools from '@app/openapi/loadTools';
 import readSpecs from '@app/openapi/specs';
-import { API } from '@app/types';
+import { API, Environment, Filter } from '@app/types';
 import {
   Credentials,
   Http,
@@ -18,16 +18,13 @@ import {
   logger,
   toolRequiresAccountSid,
 } from '@app/utils';
-import { Service } from '@app/utils/args';
-
-type Environment = 'dev' | 'stage' | 'prod';
 
 type Configuration = {
   server: {
     name: string;
     version: string;
   };
-  services: Service[];
+  filter?: Filter;
   accountSid: string;
   credentials: Credentials;
   env?: Environment;
@@ -38,7 +35,7 @@ export default class TwilioOpenAPIMCPServer {
 
   public readonly server: Server;
 
-  private services: Service[];
+  private readonly filter: Filter;
 
   private tools: Map<string, Tool> = new Map();
 
@@ -65,10 +62,12 @@ export default class TwilioOpenAPIMCPServer {
     this.http = new Http({
       credentials: config.credentials,
     });
-    this.services = config.services;
-    if (this.services.length === 0) {
-      this.services = [{ name: 'api', version: 'v2010' }];
-    }
+    this.filter = {
+      services: [],
+      tags: [],
+      ...config.filter,
+    };
+    console.log(this.filter);
   }
 
   public async start(transport: any) {
@@ -162,8 +161,9 @@ export default class TwilioOpenAPIMCPServer {
   private async loadTools() {
     const apiDir = join(this.rootDir, 'twilio-oai', 'spec', 'yaml');
     const specs = await readSpecs(apiDir, apiDir);
-    const { tools, apis } = loadTools(specs, this.services);
+    const { tools, apis } = loadTools(specs, this.filter);
     this.tools = tools;
+    console.log(this.tools.size);
     this.apis = apis;
   }
 }
