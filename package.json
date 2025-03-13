@@ -32,7 +32,6 @@
   "dependencies": {
     "@apidevtools/swagger-parser": "^10.1.1",
     "@modelcontextprotocol/sdk": "^1.6.0",
-    "chalk": "^5.4.1",
     "inquirer": "^12.4.2",
     "keytar": "^7.9.0",
     "minimist": "^1.2.8",

@@ -7,6 +7,8 @@ import {
 } from '@modelcontextprotocol/sdk/types.js';
 import twilio from 'twilio';
 
+import { logger } from '@app/utils';
+
 const [accountSid, authToken, outboundPhoneNumber] = process.argv.slice(2);
 
 const twilioClient = twilio(accountSid, authToken);
@@ -78,10 +80,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  console.error('Twilio MCP Server running on stdio');
+  logger.info('Twilio MCP Server running on stdio');
 }
 
 main().catch((error) => {
-  console.error('Fatal error in main():', error);
+  logger.error(`Fatal error in main(): ${error}`);
   process.exit(1);
 });

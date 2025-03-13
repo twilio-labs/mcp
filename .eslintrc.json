@@ -17,7 +17,6 @@
       "singleQuote": true,
       "tabWidth": 2
     }],
-    "import/extensions": "off",
-    "no-console": "off"
+    "import/extensions": "off"
   }
 }
