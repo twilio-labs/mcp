@@ -2,8 +2,7 @@ import { Tool as MCPTool } from '@modelcontextprotocol/sdk/types.js';
 import { nanoid } from 'nanoid';
 import { OpenAPIV3 } from 'openapi-types';
 
-import { API, HttpMethod } from '@app/types.js';
-import { Service } from '@app/utils/args';
+import { API, Filter, HttpMethod } from '@app/types.js';
 
 import { OpenAPISpec } from './specs.js';
 
@@ -27,12 +26,17 @@ const trimSlashes = (str: string) => {
   return str.replace(/^\/+|\/+$/g, '');
 };
 
-export default function loadTools(specs: OpenAPISpec[], services: Service[]) {
+export default function loadTools(specs: OpenAPISpec[], filter: Filter) {
   const tools: Map<string, Tool> = new Map();
   const apis: Map<string, API> = new Map();
+  const { services, tags } = filter;
 
   specs
     .filter((spec) => {
+      if (services.length === 0) {
+        return true;
+      }
+
       return services.some(
         (service) =>
           service.name === spec.service.name &&
@@ -55,11 +59,19 @@ export default function loadTools(specs: OpenAPISpec[], services: Service[]) {
         // eslint-disable-next-line consistent-return
         return Object.entries(items)
           .filter(([method]) => SUPPORTED_METHODS.includes(method.toString()))
+          .filter(([, op]) => {
+            if (!op) {
+              return false;
+            }
+
+            if (tags.length === 0) {
+              return true;
+            }
+            const operation = op as OpenAPIV3.OperationObject;
+            return (operation.tags ?? []).some((tag) => tags.includes(tag));
+          })
           .forEach(([method, op]) => {
             const operation = op as OpenAPIV3.OperationObject;
-            if (!operation) {
-              return;
-            }
 
             const id = nanoid(8);
             const name = `${operation.operationId}---${id}`;
