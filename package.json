@@ -32,7 +32,6 @@
   "dependencies": {
     "@apidevtools/swagger-parser": "^10.1.1",
     "@modelcontextprotocol/sdk": "^1.6.0",
-    "chalk": "^5.4.1",
     "inquirer": "^12.4.2",
     "keytar": "^7.9.0",
     "minimist": "^1.2.8",
@@ -42,7 +41,6 @@
     "pino": "^9.6.0",
     "pino-pretty": "^13.0.0",
     "qs": "^6.14.0",
-    "twilio": "^5.4.5",
     "zod": "^3.24.2"
   },
   "devDependencies": {
@@ -61,7 +59,7 @@
     "husky": "^9.0.11",
     "lint-staged": "^15.2.7",
     "tsc-alias": "^1.8.10",
-    "tsx": "^4.15.6",
+    "tsx": "^4.19.3",
     "typescript": "^5"
   }
 }

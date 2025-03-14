@@ -67,7 +67,6 @@ export default class TwilioOpenAPIMCPServer {
       tags: [],
       ...config.filter,
     };
-    console.log(this.filter);
   }
 
   public async start(transport: any) {
@@ -163,7 +162,6 @@ export default class TwilioOpenAPIMCPServer {
     const specs = await readSpecs(apiDir, apiDir);
     const { tools, apis } = loadTools(specs, this.filter);
     this.tools = tools;
-    console.log(this.tools.size);
     this.apis = apis;
   }
 }

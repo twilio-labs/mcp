@@ -1,7 +1,6 @@
-import chalk from 'chalk';
 import inquirer from 'inquirer';
 
-import { auth } from '@app/utils';
+import { auth, logger } from '@app/utils';
 
 export default async function init() {
   const answers = await inquirer.prompt([
@@ -23,7 +22,7 @@ export default async function init() {
   ]);
 
   if (!answers.accountSid || !answers.apiKey || !answers.apiSecret) {
-    console.log(chalk.red('Error: All fields are required'));
+    logger.error('Error: All fields are required');
     process.exit(1);
   }
 
@@ -33,5 +32,5 @@ export default async function init() {
     answers.apiSecret,
   );
 
-  console.log(chalk.green('Credentials set'));
+  logger.info('Credentials set');
 }

@@ -25,9 +25,21 @@ const jsonRpcTransport = {
     };
 
     // Output the formatted log
+    // eslint-disable-next-line no-console
     console.log(JSON.stringify(jsonRpc));
   },
 };
+
+const cliTransport = pino.transport({
+  target: 'pino-pretty',
+  options: {
+    colorize: true,
+    translateTime: 'HH:MM:ss Z',
+    ignore: 'pid,hostname',
+  },
+});
+
+const transport = process.stdout.isTTY ? cliTransport : jsonRpcTransport;
 
 const logger = pino(
   {
@@ -40,7 +52,7 @@ const logger = pino(
       },
     },
   },
-  jsonRpcTransport,
+  transport,
 );
 
 export default logger;
