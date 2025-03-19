@@ -11,14 +11,14 @@
     "sourceMap": true,
     "declaration": true,
     "outDir": "./build",
-    "rootDir": "./src",
+    "rootDir": ".",
     "baseUrl": ".",
     "paths": {
       "@app/*": ["src/*"]
     },
-    "types": ["node"]
+    "types": ["node", "vitest/globals"]
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "tests/**/*"],
   "exclude": ["node_modules"],
   "tsc-alias": {
     "resolveFullPaths": true,

@@ -16,16 +16,22 @@
   ],
   "scripts": {
     "prebuild": "rm -rf build/",
-    "build": "tsc -p tsconfig.json && tsc-alias && node -e \"require('fs').chmodSync('build/index.js', '755')\"",
-    "lint": "eslint src/ --ext .ts",
-    "lint:fix": "eslint src/ --ext .ts --fix",
+    "build": "tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json && node -e \"require('fs').chmodSync('build/index.js', '755')\"",
+    "lint": "eslint src/ tests/ --ext .ts",
+    "lint:fix": "eslint src/ tests/ --ext .ts --fix",
     "prepare": "npm run prepare:husky && npm run prepare:twilio-oai",
     "prepare:husky": "husky",
     "prepare:twilio-oai": "[ -d twilio-oai ] && (cd twilio-oai && git pull) || git clone https://github.com/twilio/twilio-oai",
-    "start": "node build"
+    "start": "node build",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "lint-staged": {
     "src/**/*.ts": [
+      "npm run lint:fix"
+    ],
+    "tests/**/*.ts": [
       "npm run lint:fix"
     ]
   },
@@ -50,6 +56,7 @@
     "@types/qs": "^6.9.18",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
+    "@vitest/coverage-v8": "^3.0.9",
     "eslint": "^8.57.1",
     "eslint-config-airbnb-base": "15.0.0",
     "eslint-config-airbnb-typescript": "^18.0.0",
@@ -60,6 +67,7 @@
     "lint-staged": "^15.5.0",
     "tsc-alias": "^1.8.11",
     "tsx": "^4.19.3",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^3.0.9"
   }
 }
