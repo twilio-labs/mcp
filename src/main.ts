@@ -13,7 +13,6 @@ if (accountSid && apiKey && apiSecret) {
 } else {
   credentials = await auth.getCredentials();
 }
-console.log(services, tags);
 
 if (!credentials) {
   logger.error('Error: No credentials found.');

@@ -80,3 +80,21 @@ Load the Incoming Phone Number and the Studio Flows API tools.
   }
 }
 ```
+
+## Modifying Server
+
+If you prefer to play around with the server, you can clone the repository and run the server locally. Once you've installed the server, `npm run build` and update your client's configuration to use
+
+```json
+{
+  "mcpServers": {
+    "twilio": {
+      "command": "node",
+      "args": [
+        "PATH_TO_REPO/build/index.js",
+        "YOUR_ACCOUNT_SID/YOUR_API_KEY:YOUR_API_SECRET"
+      ]
+    }
+  }
+}
+```
