@@ -29,6 +29,7 @@ This step depends on the client implementation. For example, with Claude, you sh
             "command": "node",
             "args": [
                 "/Users/ktalebian/Projects/github/twilio-internal/mcp/build/index.js",
+                "start",
                 "--accountSid",
                 "ACxxx",
                 "--apiKey",
