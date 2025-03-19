@@ -35,9 +35,7 @@ This step depends on the client implementation. For example, with Claude, you sh
                 "--apiKey",
                 "SKxxx",
                 "--apiSecret",
-                "abcd",
-                "--services",
-                "serverless_v1,numbers_v2"
+                "abcd"
             ]
         }
     }
