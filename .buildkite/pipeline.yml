@@ -2,7 +2,7 @@ env:
   RENDER_VERSION: v0.0.37
   ECR_VERSION: v2.7.0
   AWS_REGION: us-east-1
-  ACCOUNT_ID: "018537234677"
+  ACCOUNT_ID: '018537234677'
   SLACK_CHANNEL: '#eng-eti-deploy'
 
 #####################################################################
@@ -46,6 +46,20 @@ steps:
     command:
       - npm ci
       - npm run lint
+    env:
+      CI: true
+      NODE_ENV: test
+    plugins:
+      - docker#v3.7.0:
+          image: 'node:20'
+          environment:
+            - CI
+
+  - label: ':npm: Run Tests'
+    key: unit-testing
+    command:
+      - npm ci
+      - npm test
     env:
       CI: true
       NODE_ENV: test
