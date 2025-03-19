@@ -1,47 +1,82 @@
 # mcp
 
-This is a PoC project by the ETI team on the use of [Model Context Protocol](https://modelcontextprotocol.io/) (MCP) for the exchange of model context information between different tools.
+This is a Proof of Concept (PoC) project by the ETI team, exploring the use of [Model Context Protocol](https://modelcontextprotocol.io/) (MCP) for the exchange of model context information between different tools.
 
 ## Getting Started
 
-1) Clone the repository
-2) `npm install`
-3) `npm run build`
-
-## Using the MCP Server
-
-You first need to `build` the server using `npm run build`. Then in the client, reference the `build/index.js` file. You need to pass the following arguments:
-
-```
---accountSid # the accountSid of your account
---apiKey # the apiKey of your account
---apiSecret # the apiSecret of your account
---services # the name of the services you want to use (comma separated, no spaces) - this correponds to the filename https://github.com/twilio/twilio-oai/tree/main/spec/yaml without the `twilio_` prefix - for example `chat_v3` for `twilio_chat_v3`
---tags # The tag name as defined in each of the individual endpoints (comma separated, no spaces). If you want to filter by `tags` only, make sure you pass `--services ''` as an empty object.
-```
-
-This step depends on the client implementation. For example, with Claude, you should edit `~/Library/Application\ Support/Claude/claude_desktop_config.json` and paste (change the path to your `build/index.js`):
+The easiest way to get started is to edit the configuration of your client to point to the MCP server using `npx`.
 
 ```json
 {
-    "mcpServers": {
-        "twilio": {
-            "command": "node",
-            "args": [
-                "/Users/ktalebian/Projects/github/twilio-internal/mcp/build/index.js",
-                "start",
-                "--accountSid",
-                "ACxxx",
-                "--apiKey",
-                "SKxxx",
-                "--apiSecret",
-                "abcd"
-            ]
-        }
+  "mcpServers": {
+    "twilio": {
+      "command": "npx",
+      "args": [
+        "-y", 
+        "@twilio-alpha/mcp",
+        "YOUR_ACCOUNT_SID/YOUR_API_KEY:YOUR_API_SECRET"
+      ]
     }
+  }
 }
 ```
 
-## Logs
+Visit [Twilio API Keys docs](https://www.twilio.com/docs/iam/api-keys) for information on how to find/create your apiKey/apiSecret.
 
-The logs for Claude are at ` ~/Library/Logs/Claude/mcp-server-twilio.log`.
+## Configuration Parameters
+
+You can pass the following optional parameters to the `mcp` server:
+
+**--services (optional)** 
+
+The name of the services you want to use - this corresponds to the filename https://github.com/twilio/twilio-oai/tree/main/spec/yaml without the `twilio_` prefix - for example `chat_v3` for `twilio_chat_v3`.
+
+**--tags (optional)**
+
+The tag name as defined in each of the individual endpoints. If you want to filter by `tags` only, make sure you pass `--services ''` as an empty object.
+
+## Loading Separate APIs
+
+Due to the context size limitation of LLMs and the vast number of APIs available, you need to load separate APIs by passing the `--services/--tags` parameter. For example, to load the `chat_v3` API, you can pass `--services chat_v3`. If you need particular APIs from separate service files, you can use the `--tags` to individually select the endpoints. 
+
+### Examples: Serverless Tools
+
+Load all the Serverless API tools.
+
+```json
+{
+  "mcpServers": {
+    "twilio": {
+      "command": "npx",
+      "args": [
+        "-y", 
+        "@twilio-alpha/mcp",
+        "YOUR_ACCOUNT_SID/YOUR_API_KEY:YOUR_API_SECRET",
+        "--services",
+        "serverless_v1"
+      ]
+    }
+  }
+}
+```
+
+### Examples: A Collection of Tools
+
+Load the Incoming Phone Number and the Studio Flows API tools.
+
+```json
+{
+  "mcpServers": {
+    "twilio": {
+      "command": "npx",
+      "args": [
+        "-y", 
+        "@twilio-alpha/mcp",
+        "YOUR_ACCOUNT_SID/YOUR_API_KEY:YOUR_API_SECRET",
+        "--tags",
+        "Api20100401IncomingPhoneNumber,StudioV2Flow"
+      ]
+    }
+  }
+}
+```
