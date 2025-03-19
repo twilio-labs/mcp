@@ -1,12 +1,14 @@
 import minimist from 'minimist';
 
+import { isValidTwilioSid } from './general';
+import logger from './logger';
+
 export type Service = {
   name: string;
   version: string;
 };
 
 interface ParsedArgs {
-  command: string;
   services: Service[];
   tags: string[];
   accountSid?: string;
@@ -26,9 +28,10 @@ const sanitizeArgs = (args: string): string[] => {
 };
 
 const parsedArgs = async (argv: string[]): Promise<ParsedArgs> => {
-  const [command, ...args] = argv.slice(2);
+  const args = argv.slice(2);
+  const firstArg = args[0];
 
-  const parsed = minimist(args, {
+  const parsed = minimist(argv, {
     alias: {
       a: 'accountSid',
       k: 'apiKey',
@@ -39,13 +42,42 @@ const parsedArgs = async (argv: string[]): Promise<ParsedArgs> => {
     string: ['accountSid', 'apiKey', 'apiSecret', 'tags', 'services'],
   });
 
-  const {
-    services: sArgs,
-    accountSid,
-    apiKey,
-    apiSecret,
-    tags: tArgs,
-  } = parsed;
+  // eslint-disable-next-line prefer-const
+  let { services: sArgs, accountSid, apiKey, apiSecret, tags: tArgs } = parsed;
+
+  // Handle "accountSid/apiKey:apiSecret" format
+  if (
+    !accountSid &&
+    !apiKey &&
+    !apiSecret &&
+    firstArg &&
+    firstArg.includes('/')
+  ) {
+    const credsMatch = firstArg.match(/^([^/]+)\/([^:]+):(.+)$/);
+    if (credsMatch) {
+      const potentialAccountSid = credsMatch[1];
+      const potentialApiKey = credsMatch[2];
+      const potentialApiSecret = credsMatch[3];
+
+      if (
+        isValidTwilioSid(potentialAccountSid, 'AC') &&
+        isValidTwilioSid(potentialApiKey, 'SK')
+      ) {
+        accountSid = potentialAccountSid;
+        apiKey = potentialApiKey;
+        apiSecret = potentialApiSecret;
+      }
+    }
+  }
+
+  if (!isValidTwilioSid(accountSid, 'AC')) {
+    logger.error('Error: Invalid AccountSid');
+    process.exit(1);
+  }
+  if (!isValidTwilioSid(apiKey, 'SK')) {
+    logger.error('Error: Invalid ApiKey');
+    process.exit(1);
+  }
 
   const servicesList = sanitizeArgs(sArgs);
 
@@ -65,7 +97,6 @@ const parsedArgs = async (argv: string[]): Promise<ParsedArgs> => {
   return {
     services,
     tags,
-    command,
     accountSid,
     apiKey,
     apiSecret,

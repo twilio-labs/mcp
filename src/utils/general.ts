@@ -1,6 +1,14 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
 
 /**
+ * Check if a string is a valid Twilio SID
+ * @param sid
+ * @param prefix
+ */
+export const isValidTwilioSid = (sid: string, prefix: string): boolean =>
+  new RegExp(`^${prefix}[A-Za-z0-9]{32}$`).test(sid);
+
+/**
  * Interpolate URL with params
  * @param url
  * @param params

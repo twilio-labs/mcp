@@ -8,7 +8,6 @@ let credentials: AccountCredentials | null;
 const { services, accountSid, apiKey, apiSecret, tags } = await args(
   process.argv,
 );
-
 if (accountSid && apiKey && apiSecret) {
   credentials = { accountSid, apiKey, apiSecret };
 } else {
