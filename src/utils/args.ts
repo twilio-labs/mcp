@@ -16,6 +16,15 @@ interface ParsedArgs {
 
 const DEFAULT_SERVICE = { name: 'api', version: 'v2010' };
 
+const sanitizeArgs = (args: string): string[] => {
+  return args
+    ? args
+        .split(',')
+        .map((s: string) => s.trim())
+        .filter((s: string) => s.length > 0)
+    : [];
+};
+
 const parsedArgs = async (argv: string[]): Promise<ParsedArgs> => {
   const [command, ...args] = argv.slice(2);
 
@@ -38,18 +47,23 @@ const parsedArgs = async (argv: string[]): Promise<ParsedArgs> => {
     tags: tArgs,
   } = parsed;
 
-  const servicesList: string[] = sArgs ? sArgs.split(',') : [];
-  const services = servicesList
-    .filter((s) => (s.match(/_/g) || []).length === 1)
-    .map((s) => {
+  const servicesList = sanitizeArgs(sArgs);
+
+  let services = servicesList
+    .filter((s: string) => (s.match(/_/g) || []).length === 1)
+    .map((s: string) => {
       const [name, version] = s.split('_');
       return { name, version };
     });
-  const tags: string[] = tArgs ? tArgs.split(',') : [];
+
+  if (services.length === 0 && !tArgs) {
+    services = [DEFAULT_SERVICE];
+  }
+
+  const tags = sanitizeArgs(tArgs);
 
   return {
-    // if tags provided by no services provided, do not use default service
-    services: tArgs ? services : [DEFAULT_SERVICE],
+    services,
     tags,
     command,
     accountSid,
