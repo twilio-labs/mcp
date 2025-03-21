@@ -13,7 +13,7 @@
     "build": "npm run build --workspaces",
     "lint": "npm run lint --workspaces",
     "lint:fix": "npm run lint:fix --workspaces",
-    "prepare": "npm run prepare --workspaces && husky",
+    "prepare": "npm run prepare --workspaces && husky && cd packages/openapi-mcp-server && npm run build",
     "test": "npm run test --workspaces",
     "test:coverage": "npm run test:coverage --workspaces",
     "test:watch": "npm run test:watch --workspaces"
