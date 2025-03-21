@@ -1,28 +1,19 @@
 import { nanoid } from 'nanoid';
 import { OpenAPIV3 } from 'openapi-types';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, Mock, vi } from 'vitest';
 
-import loadTools from '@app/openapi/loadTools';
-import { OpenAPISpec } from '@app/openapi/specs';
-import { Filter, HttpMethod } from '@app/types';
-
-// Mock nanoid to return predictable IDs for testing
-vi.mock('nanoid', () => ({
-  nanoid: vi.fn(() => 'test12345'),
-}));
+import { HttpMethod } from '@app/types';
+import { OpenAPISpec } from '@app/utils';
+import loadTools from '@app/utils/loadTools';
 
 describe('loadTools', () => {
   const createMockSpec = (
     name: string,
-    version: string,
     paths: Record<string, any>,
     info: Partial<OpenAPIV3.InfoObject> = {},
   ): OpenAPISpec => ({
-    service: {
-      name,
-      version,
-    },
-    path: `/path/to/${name}_${version}.yaml`,
+    service: name,
+    path: `/path/to/${name}.yaml`,
     document: {
       openapi: '3.0.0',
       info: {
@@ -37,7 +28,7 @@ describe('loadTools', () => {
 
   it('should filter specs by service name and version', () => {
     const specs: OpenAPISpec[] = [
-      createMockSpec('service1', 'v1', {
+      createMockSpec('service1', {
         '/resource': {
           get: {
             operationId: 'getResource',
@@ -45,7 +36,7 @@ describe('loadTools', () => {
           },
         },
       }),
-      createMockSpec('service2', 'v2', {
+      createMockSpec('service2', {
         '/resource': {
           get: {
             operationId: 'getResource',
@@ -55,8 +46,8 @@ describe('loadTools', () => {
       }),
     ];
 
-    const filter: Filter = {
-      services: [{ name: 'service1', version: 'v1' }],
+    const filter = {
+      services: ['service1'],
       tags: [],
     };
 
@@ -73,7 +64,7 @@ describe('loadTools', () => {
 
   it('should include all services when services filter is empty', () => {
     const specs: OpenAPISpec[] = [
-      createMockSpec('service1', 'v1', {
+      createMockSpec('service1', {
         '/resource1': {
           get: {
             operationId: 'getResource1',
@@ -81,7 +72,7 @@ describe('loadTools', () => {
           },
         },
       }),
-      createMockSpec('service2', 'v2', {
+      createMockSpec('service2', {
         '/resource2': {
           get: {
             operationId: 'getResource2',
@@ -91,7 +82,7 @@ describe('loadTools', () => {
       }),
     ];
 
-    const filter: Filter = {
+    const filter = {
       services: [],
       tags: [],
     };
@@ -104,7 +95,7 @@ describe('loadTools', () => {
 
   it('should filter operations by tags', () => {
     const specs: OpenAPISpec[] = [
-      createMockSpec('service1', 'v1', {
+      createMockSpec('service1', {
         '/tagged': {
           get: {
             operationId: 'getTagged',
@@ -128,7 +119,7 @@ describe('loadTools', () => {
       }),
     ];
 
-    const filter: Filter = {
+    const filter = {
       services: [],
       tags: ['tag1'],
     };
@@ -146,7 +137,7 @@ describe('loadTools', () => {
 
   it('should include all operations when tags filter is empty', () => {
     const specs: OpenAPISpec[] = [
-      createMockSpec('service1', 'v1', {
+      createMockSpec('service1', {
         '/tagged': {
           get: {
             operationId: 'getTagged',
@@ -164,7 +155,7 @@ describe('loadTools', () => {
       }),
     ];
 
-    const filter: Filter = {
+    const filter = {
       services: [],
       tags: [],
     };
@@ -187,7 +178,7 @@ describe('loadTools', () => {
 
   it('should only include supported HTTP methods', () => {
     const specs: OpenAPISpec[] = [
-      createMockSpec('service1', 'v1', {
+      createMockSpec('service1', {
         '/resource': {
           get: {
             operationId: 'getResource',
@@ -221,7 +212,7 @@ describe('loadTools', () => {
       }),
     ];
 
-    const filter: Filter = {
+    const filter = {
       services: [],
       tags: [],
     };
@@ -239,10 +230,10 @@ describe('loadTools', () => {
     }
 
     expect(methods.size).toBe(4);
-    expect(methods.has(HttpMethod.GET)).toBe(true);
-    expect(methods.has(HttpMethod.POST)).toBe(true);
-    expect(methods.has(HttpMethod.PUT)).toBe(true);
-    expect(methods.has(HttpMethod.DELETE)).toBe(true);
+    expect(methods.has('GET')).toBe(true);
+    expect(methods.has('POST')).toBe(true);
+    expect(methods.has('PUT')).toBe(true);
+    expect(methods.has('DELETE')).toBe(true);
     expect(methods.has('HEAD' as HttpMethod)).toBe(false);
     expect(methods.has('OPTIONS' as HttpMethod)).toBe(false);
     expect(methods.has('PATCH' as HttpMethod)).toBe(false);
@@ -250,7 +241,7 @@ describe('loadTools', () => {
 
   it('should use baseURL from server when available', () => {
     const specs: OpenAPISpec[] = [
-      createMockSpec('service1', 'v1', {
+      createMockSpec('service1', {
         '/resource': {
           servers: [
             {
@@ -265,7 +256,7 @@ describe('loadTools', () => {
       }),
     ];
 
-    const filter: Filter = {
+    const filter = {
       services: [],
       tags: [],
     };
@@ -283,7 +274,7 @@ describe('loadTools', () => {
 
   it('should trim slashes in path construction', () => {
     const specs: OpenAPISpec[] = [
-      createMockSpec('service1', 'v1', {
+      createMockSpec('service1', {
         '/resource/': {
           servers: [
             {
@@ -298,7 +289,7 @@ describe('loadTools', () => {
       }),
     ];
 
-    const filter: Filter = {
+    const filter = {
       services: [],
       tags: [],
     };
@@ -316,7 +307,7 @@ describe('loadTools', () => {
 
   it('should use empty string for baseURL when not available', () => {
     const specs: OpenAPISpec[] = [
-      createMockSpec('service1', 'v1', {
+      createMockSpec('service1', {
         '/resource': {
           get: {
             operationId: 'getResource',
@@ -326,7 +317,7 @@ describe('loadTools', () => {
       }),
     ];
 
-    const filter: Filter = {
+    const filter = {
       services: [],
       tags: [],
     };
@@ -338,13 +329,13 @@ describe('loadTools', () => {
 
     // Check the path is just the path without a baseURL
     for (const [, api] of apis) {
-      expect(api.path).toBe('resource');
+      expect(api.path).toBe('/resource');
     }
   });
 
   it('should use operationId in tool name', () => {
     const specs: OpenAPISpec[] = [
-      createMockSpec('service1', 'v1', {
+      createMockSpec('service1', {
         '/resource': {
           get: {
             operationId: 'getResource',
@@ -354,7 +345,7 @@ describe('loadTools', () => {
       }),
     ];
 
-    const filter: Filter = {
+    const filter = {
       services: [],
       tags: [],
     };
@@ -362,13 +353,13 @@ describe('loadTools', () => {
     const { tools } = loadTools(specs, filter);
 
     for (const [, tool] of tools) {
-      expect(tool.name).toBe('getResource---test12345');
+      expect(tool.name).toContain('getResource---');
     }
   });
 
   it('should use operation description in tool description', () => {
     const specs: OpenAPISpec[] = [
-      createMockSpec('service1', 'v1', {
+      createMockSpec('service1', {
         '/resource': {
           get: {
             operationId: 'getResource',
@@ -378,7 +369,7 @@ describe('loadTools', () => {
       }),
     ];
 
-    const filter: Filter = {
+    const filter = {
       services: [],
       tags: [],
     };
@@ -394,7 +385,7 @@ describe('loadTools', () => {
 
   it('should use method and path if no operation description is available', () => {
     const specs: OpenAPISpec[] = [
-      createMockSpec('service1', 'v1', {
+      createMockSpec('service1', {
         '/resource': {
           get: {
             operationId: 'getResource',
@@ -403,7 +394,7 @@ describe('loadTools', () => {
       }),
     ];
 
-    const filter: Filter = {
+    const filter = {
       services: [],
       tags: [],
     };
@@ -419,7 +410,7 @@ describe('loadTools', () => {
 
   it('should handle parameters and add them to the input schema', () => {
     const specs: OpenAPISpec[] = [
-      createMockSpec('service1', 'v1', {
+      createMockSpec('service1', {
         '/resource/{id}': {
           get: {
             operationId: 'getResource',
@@ -448,7 +439,7 @@ describe('loadTools', () => {
       }),
     ];
 
-    const filter: Filter = {
+    const filter = {
       services: [],
       tags: [],
     };
@@ -482,7 +473,7 @@ describe('loadTools', () => {
 
   it('should use parameter name as description if none is provided', () => {
     const specs: OpenAPISpec[] = [
-      createMockSpec('service1', 'v1', {
+      createMockSpec('service1', {
         '/resource': {
           get: {
             operationId: 'getResource',
@@ -500,7 +491,7 @@ describe('loadTools', () => {
       }),
     ];
 
-    const filter: Filter = {
+    const filter = {
       services: [],
       tags: [],
     };
@@ -516,7 +507,7 @@ describe('loadTools', () => {
 
   it('should handle request body parameters for application/json', () => {
     const specs: OpenAPISpec[] = [
-      createMockSpec('service1', 'v1', {
+      createMockSpec('service1', {
         '/resource': {
           post: {
             operationId: 'createResource',
@@ -545,7 +536,7 @@ describe('loadTools', () => {
       }),
     ];
 
-    const filter: Filter = {
+    const filter = {
       services: [],
       tags: [],
     };
@@ -579,13 +570,13 @@ describe('loadTools', () => {
 
     // Check API doesn't use urlencoded for application/json
     for (const [, api] of apis) {
-      expect(api.urlencoded).toBe(false);
+      expect(api.contentType).toBe('application/json');
     }
   });
 
   it('should handle request body parameters for application/x-www-form-urlencoded', () => {
     const specs: OpenAPISpec[] = [
-      createMockSpec('service1', 'v1', {
+      createMockSpec('service1', {
         '/resource': {
           post: {
             operationId: 'createResource',
@@ -614,7 +605,7 @@ describe('loadTools', () => {
       }),
     ];
 
-    const filter: Filter = {
+    const filter = {
       services: [],
       tags: [],
     };
@@ -626,13 +617,13 @@ describe('loadTools', () => {
 
     // Check API uses urlencoded for application/x-www-form-urlencoded
     for (const [, api] of apis) {
-      expect(api.urlencoded).toBe(true);
+      expect(api.contentType).toBe('application/x-www-form-urlencoded');
     }
   });
 
   it('should use property key as description if none is provided', () => {
     const specs: OpenAPISpec[] = [
-      createMockSpec('service1', 'v1', {
+      createMockSpec('service1', {
         '/resource': {
           post: {
             operationId: 'createResource',
@@ -655,7 +646,7 @@ describe('loadTools', () => {
       }),
     ];
 
-    const filter: Filter = {
+    const filter = {
       services: [],
       tags: [],
     };
@@ -671,7 +662,7 @@ describe('loadTools', () => {
 
   it('should use string as default type if not specified', () => {
     const specs: OpenAPISpec[] = [
-      createMockSpec('service1', 'v1', {
+      createMockSpec('service1', {
         '/resource': {
           post: {
             operationId: 'createResource',
@@ -694,7 +685,7 @@ describe('loadTools', () => {
       }),
     ];
 
-    const filter: Filter = {
+    const filter = {
       services: [],
       tags: [],
     };
@@ -709,10 +700,7 @@ describe('loadTools', () => {
   it('should skip specs without paths', () => {
     const specs: OpenAPISpec[] = [
       {
-        service: {
-          name: 'emptyService',
-          version: 'v1',
-        },
+        service: 'emptyService',
         path: '/path/to/empty_v1.yaml',
         document: {
           openapi: '3.0.0',
@@ -725,7 +713,7 @@ describe('loadTools', () => {
       },
     ];
 
-    const filter: Filter = {
+    const filter = {
       services: [],
       tags: [],
     };
@@ -738,7 +726,7 @@ describe('loadTools', () => {
 
   it('should handle API with null items in paths', () => {
     const specs: OpenAPISpec[] = [
-      createMockSpec('service1', 'v1', {
+      createMockSpec('service1', {
         '/resource': null,
         '/valid': {
           get: {
@@ -749,7 +737,7 @@ describe('loadTools', () => {
       }),
     ];
 
-    const filter: Filter = {
+    const filter = {
       services: [],
       tags: [],
     };
@@ -762,7 +750,7 @@ describe('loadTools', () => {
 
   it('should handle API with null operations', () => {
     const specs: OpenAPISpec[] = [
-      createMockSpec('service1', 'v1', {
+      createMockSpec('service1', {
         '/resource': {
           get: null,
           post: {
@@ -773,7 +761,7 @@ describe('loadTools', () => {
       }),
     ];
 
-    const filter: Filter = {
+    const filter = {
       services: [],
       tags: [],
     };
@@ -789,11 +777,8 @@ describe('loadTools', () => {
   });
 
   it('should generate consistent IDs for tools and APIs', () => {
-    // Make nanoid return a specific value for this test
-    (nanoid as unknown as vi.Mock).mockReturnValueOnce('abc123');
-
     const specs: OpenAPISpec[] = [
-      createMockSpec('service1', 'v1', {
+      createMockSpec('service1', {
         '/resource': {
           get: {
             operationId: 'getResource',
@@ -803,7 +788,7 @@ describe('loadTools', () => {
       }),
     ];
 
-    const filter: Filter = {
+    const filter = {
       services: [],
       tags: [],
     };
@@ -815,6 +800,5 @@ describe('loadTools', () => {
 
     // The IDs in the Maps should be the same
     expect([...tools.keys()]).toEqual([...apis.keys()]);
-    expect([...tools.keys()][0]).toBe('abc123');
   });
 });

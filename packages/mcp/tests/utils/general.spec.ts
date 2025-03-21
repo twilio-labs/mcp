@@ -2,7 +2,6 @@ import { Tool } from '@modelcontextprotocol/sdk/types.js';
 import { describe, expect, test } from 'vitest';
 
 import {
-  interpolateUrl,
   isValidTwilioSid,
   toolRequiresAccountSid,
 } from '../../src/utils/general';
@@ -39,80 +38,6 @@ describe('general', () => {
 
       // Empty string
       expect(isValidTwilioSid('', 'AC')).toBe(false);
-    });
-  });
-
-  describe('interpolateUrl', () => {
-    test('should return the original URL if no params are provided', () => {
-      expect(interpolateUrl('/api/v1/resource')).toBe('/api/v1/resource');
-      expect(interpolateUrl('/api/v1/resource', undefined)).toBe(
-        '/api/v1/resource',
-      );
-    });
-
-    test('should return the original URL if params is an array', () => {
-      expect(interpolateUrl('/api/v1/resource', [] as any)).toBe(
-        '/api/v1/resource',
-      );
-    });
-
-    test('should replace string parameters in the URL', () => {
-      expect(interpolateUrl('/api/{version}/resource', { version: 'v1' })).toBe(
-        '/api/v1/resource',
-      );
-
-      expect(
-        interpolateUrl('/api/{version}/resource/{id}', {
-          version: 'v1',
-          id: 'abc123',
-        }),
-      ).toBe('/api/v1/resource/abc123');
-    });
-
-    test('should replace number parameters in the URL', () => {
-      expect(interpolateUrl('/api/v1/resource/{id}', { id: 123 })).toBe(
-        '/api/v1/resource/123',
-      );
-    });
-
-    test('should replace boolean parameters in the URL', () => {
-      expect(
-        interpolateUrl('/api/v1/resource/{active}', { active: true }),
-      ).toBe('/api/v1/resource/true');
-
-      expect(
-        interpolateUrl('/api/v1/resource/{active}', { active: false }),
-      ).toBe('/api/v1/resource/false');
-    });
-
-    test('should not replace parameters of unsupported types', () => {
-      expect(
-        interpolateUrl('/api/v1/resource/{obj}', { obj: { key: 'value' } }),
-      ).toBe('/api/v1/resource/{obj}');
-
-      expect(interpolateUrl('/api/v1/resource/{arr}', { arr: [1, 2, 3] })).toBe(
-        '/api/v1/resource/{arr}',
-      );
-
-      expect(interpolateUrl('/api/v1/resource/{nul}', { nul: null })).toBe(
-        '/api/v1/resource/{nul}',
-      );
-    });
-
-    test('should handle multiple replacements of different types', () => {
-      expect(
-        interpolateUrl('/api/{version}/resource/{id}/status/{active}', {
-          version: 'v1',
-          id: 123,
-          active: true,
-        }),
-      ).toBe('/api/v1/resource/123/status/true');
-    });
-
-    test('should leave placeholders for missing parameters', () => {
-      expect(
-        interpolateUrl('/api/{version}/resource/{id}', { version: 'v1' }),
-      ).toBe('/api/v1/resource/{id}');
     });
   });
 

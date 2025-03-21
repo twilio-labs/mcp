@@ -1,22 +1,17 @@
+import { logger } from '@twilio-alpha/openapi-mcp-server';
 import minimist from 'minimist';
 
 import { isValidTwilioSid } from './general';
-import logger from './logger';
-
-export type Service = {
-  name: string;
-  version: string;
-};
 
 interface ParsedArgs {
-  services: Service[];
+  services: string[];
   tags: string[];
   accountSid?: string;
   apiKey?: string;
   apiSecret?: string;
 }
 
-const DEFAULT_SERVICE = { name: 'api', version: 'v2010' };
+const DEFAULT_SERVICE = 'twilio_api_v2010';
 
 const sanitizeArgs = (args: string): string[] => {
   return args
@@ -79,15 +74,7 @@ const parsedArgs = async (argv: string[]): Promise<ParsedArgs> => {
     process.exit(1);
   }
 
-  const servicesList = sanitizeArgs(sArgs);
-
-  let services = servicesList
-    .filter((s: string) => (s.match(/_/g) || []).length === 1)
-    .map((s: string) => {
-      const [name, version] = s.split('_');
-      return { name, version };
-    });
-
+  let services = sanitizeArgs(sArgs);
   if (services.length === 0 && !tArgs) {
     services = [DEFAULT_SERVICE];
   }

@@ -37,7 +37,7 @@ describe('parsedArgs', () => {
     const result = await parsedArgs(args);
 
     expect(result).toEqual({
-      services: [{ name: 'api', version: 'v2010' }],
+      services: ['twilio_api_v2010'],
       tags: [],
       accountSid: validAccountSid,
       apiKey: validApiKey,
@@ -58,10 +58,7 @@ describe('parsedArgs', () => {
     const result = await parsedArgs(args);
 
     expect(result).toEqual({
-      services: [
-        { name: 'service1', version: 'v1' },
-        { name: 'service2', version: 'v2' },
-      ],
+      services: ['service1_v1', 'service2_v2'],
       tags: [],
       accountSid: validAccountSid,
       apiKey: validApiKey,
@@ -82,10 +79,7 @@ describe('parsedArgs', () => {
 
     const result = await parsedArgs(args);
 
-    expect(result.services).toEqual([
-      { name: 'service1', version: 'v1' },
-      { name: 'service2', version: 'v2' },
-    ]);
+    expect(result.services).toEqual(['service1_v1', 'service2_v2']);
   });
 
   it('should sanitize and parse tags', async () => {
@@ -129,7 +123,7 @@ describe('parsedArgs', () => {
     const result = await parsedArgs(args);
 
     expect(result).toEqual({
-      services: [{ name: 'api', version: 'v2010' }],
+      services: ['twilio_api_v2010'],
       tags: [],
       accountSid: validAccountSid,
       apiKey: validApiKey,
@@ -150,30 +144,12 @@ describe('parsedArgs', () => {
     const result = await parsedArgs(args);
 
     expect(result).toEqual({
-      services: [{ name: 'api', version: 'v2010' }],
+      services: ['twilio_api_v2010'],
       tags: [],
       accountSid: 'AC11111111111111111111111111111111',
       apiKey: 'SK11111111111111111111111111111111',
       apiSecret: 'differentSecret',
     });
-  });
-
-  it('should filter out invalid service formats', async () => {
-    const args = [
-      'node',
-      'script.js',
-      `--accountSid=${validAccountSid}`,
-      `--apiKey=${validApiKey}`,
-      `--apiSecret=${apiSecret}`,
-      '--services=service1_v1,invalid,service2_v2,no_underscore_version',
-    ];
-
-    const result = await parsedArgs(args);
-
-    expect(result.services).toEqual([
-      { name: 'service1', version: 'v1' },
-      { name: 'service2', version: 'v2' },
-    ]);
   });
 
   it('should call process.exit if accountSid is invalid', async () => {
@@ -238,7 +214,7 @@ describe('parsedArgs', () => {
     const result = await parsedArgs(args);
 
     expect(result).toEqual({
-      services: [{ name: 'service1', version: 'v1' }],
+      services: ['service1_v1'],
       tags: ['tag1', 'tag2'],
       accountSid: validAccountSid,
       apiKey: validApiKey,
@@ -274,7 +250,7 @@ describe('parsedArgs', () => {
     const result = await parsedArgs(args);
 
     expect(result).toEqual({
-      services: [{ name: 'api', version: 'v2010' }],
+      services: ['twilio_api_v2010'],
       tags: [],
       accountSid: validAccountSid,
       apiKey: validApiKey,

@@ -1,7 +1,8 @@
 #!/usr/bin/env node
+import { logger } from '@twilio-alpha/openapi-mcp-server/build';
+
 import init from '@app/init';
 import main from '@app/main';
-import { logger } from '@app/utils';
 
 const command = process.argv[2];
 

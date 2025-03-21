@@ -1,7 +1,3 @@
-export type Filter = {
-  tags: string[];
-};
-
 export type HttpMethod = 'GET' | 'DELETE' | 'POST' | 'PUT';
 export type ContentType =
   | 'application/json'

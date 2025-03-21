@@ -1,7 +1,8 @@
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { logger } from '@twilio-alpha/openapi-mcp-server/build';
 
 import TwilioOpenAPIMCPServer from '@app/server';
-import { args, auth, logger, type AccountCredentials } from '@app/utils';
+import { args, auth, type AccountCredentials } from '@app/utils';
 
 let credentials: AccountCredentials | null;
 
@@ -24,7 +25,7 @@ const server = new TwilioOpenAPIMCPServer({
     name: 'twilio-server',
     version: '0.0.1',
   },
-  filter: {
+  filters: {
     services,
     tags,
   },

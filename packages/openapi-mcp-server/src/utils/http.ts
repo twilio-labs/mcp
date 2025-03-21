@@ -19,7 +19,7 @@ type ErrorResponse = {
   response?: Response;
 };
 
-type HttpResponse<T> = SuccessResponse<T> | ErrorResponse;
+export type HttpResponse<T> = SuccessResponse<T> | ErrorResponse;
 
 type RequestOption = {
   headers?: Record<string, string>;
@@ -37,15 +37,21 @@ export type Authorization = {
   password: string;
 };
 
-type Configuration = {
-  authorization: Authorization;
+export type Configuration = {
+  authorization?: Authorization;
 };
 
 /**
  * Get the authorization header
  * @param authorization
  */
-function getAuthorization(authorization: Authorization) {
+function getAuthorization(
+  authorization?: Authorization,
+): Record<string, string> {
+  if (!authorization) {
+    return {};
+  }
+
   if (authorization.type === 'BasicAuth') {
     return {
       Authorization: `Basic ${Buffer.from(

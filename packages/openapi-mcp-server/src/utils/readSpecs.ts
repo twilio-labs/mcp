@@ -24,16 +24,17 @@ export default async function readSpecs(
       }
 
       // Check of yaml only
+      if (!entry.name.endsWith('.yaml') && !entry.name.endsWith('.yml')) {
+        return null;
+      }
 
-      const relativePath = path.relative(baseDir, fullPath);
-      const parts = relativePath.split(path.sep);
       const document = (await SwaggerParser.bundle(
         fullPath,
       )) as OpenAPIV3.Document;
 
       return [
         {
-          service: parts[0],
+          service: path.basename(fullPath, path.extname(fullPath)),
           path: fullPath,
           document,
         },
@@ -41,5 +42,5 @@ export default async function readSpecs(
     }),
   );
 
-  return specs.flat();
+  return specs.filter(Boolean).flat() as OpenAPISpec[];
 }
