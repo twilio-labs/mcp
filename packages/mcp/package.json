@@ -1,0 +1,47 @@
+{
+  "name": "@twilio-alpha/mcp",
+  "version": "0.0.1",
+  "description": "This is a Model Context Protocol server that exposes all of Twilio APIs.",
+  "license": "ISC",
+  "author": "Twilio",
+  "type": "module",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "bin": {
+    "twilio-mcp-server": "./build/index.js"
+  },
+  "files": [
+    "build",
+    "twilio-oai/spec"
+  ],
+  "scripts": {
+    "prebuild": "rm -rf build/",
+    "build": "tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json && node -e \"require('fs').chmodSync('build/index.js', '755')\"",
+    "lint": "eslint src/ tests/ --ext .ts",
+    "lint:fix": "eslint src/ tests/ --ext .ts --fix",
+    "prepare": "npm run prepare:husky && npm run prepare:twilio-oai",
+    "prepare:husky": "husky",
+    "prepare:twilio-oai": "[ -d twilio-oai ] && (cd twilio-oai && git pull) || git clone https://github.com/twilio/twilio-oai",
+    "start": "node build",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "dependencies": {
+    "@apidevtools/swagger-parser": "^10.1.1",
+    "@modelcontextprotocol/sdk": "^1.7.0",
+    "inquirer": "^12.5.0",
+    "keytar": "^7.9.0",
+    "minimist": "^1.2.8",
+    "nanoid": "^5.1.4",
+    "node-fetch": "^3.3.2",
+    "openapi-types": "^12.1.3",
+    "pino": "^9.6.0",
+    "pino-pretty": "^13.0.0",
+    "qs": "^6.14.0",
+    "zod": "^3.24.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

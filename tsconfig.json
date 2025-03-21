@@ -9,19 +9,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "sourceMap": true,
-    "declaration": true,
-    "outDir": "./build",
-    "rootDir": ".",
-    "baseUrl": ".",
-    "paths": {
-      "@app/*": ["src/*"]
-    },
-    "types": ["node", "vitest/globals"]
+    "declaration": true
   },
-  "include": ["src/**/*", "tests/**/*"],
-  "exclude": ["node_modules"],
-  "tsc-alias": {
-    "resolveFullPaths": true,
-    "verbose": false
-  }
+  "exclude": ["node_modules"]
 }
