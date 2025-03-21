@@ -41,6 +41,57 @@ type Configuration = {
   authorization: Authorization;
 };
 
+/**
+ * Get the authorization header
+ * @param authorization
+ */
+function getAuthorization(authorization: Authorization) {
+  if (authorization.type === 'BasicAuth') {
+    return {
+      Authorization: `Basic ${Buffer.from(
+        `${authorization.username}:${authorization.password}`,
+      ).toString('base64')}`,
+    };
+  }
+
+  throw new Error(`Unsupported authorization type: ${authorization.type}`);
+}
+
+/**
+ * Interpolate URL with params
+ * @param url
+ * @param params
+ */
+export const interpolateUrl = (
+  url: string,
+  params?: Record<string, unknown>,
+) => {
+  if (!params) {
+    return url;
+  }
+
+  if (Array.isArray(params)) {
+    return url;
+  }
+
+  return url.replace(/{(.*?)}/g, (_, key) => {
+    const value = params[key];
+    if (typeof value === 'string') {
+      return value;
+    }
+
+    if (typeof value === 'number') {
+      return value.toString();
+    }
+
+    if (typeof value === 'boolean') {
+      return value.toString();
+    }
+
+    return `{${key}}`;
+  });
+};
+
 export default class Http {
   private readonly defaultRequest: RequestInit;
 
@@ -50,23 +101,11 @@ export default class Http {
     this.defaultRequest = {
       headers: {
         'Content-Type': 'application/json',
-        ...Http.getAuthorization(config.authorization),
+        ...getAuthorization(config.authorization),
       },
     };
 
     this.logger = logger.child({ module: 'Http' });
-  }
-
-  private static getAuthorization(authorization: Authorization) {
-    if (authorization.type === 'BasicAuth') {
-      return {
-        Authorization: `Basic ${Buffer.from(
-          `${authorization.username}:${authorization.password}`,
-        ).toString('base64')}`,
-      };
-    }
-
-    throw new Error(`Unsupported authorization type: ${authorization.type}`);
   }
 
   /**
