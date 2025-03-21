@@ -1,5 +1,5 @@
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import { logger } from '@twilio-alpha/openapi-mcp-server/build';
+import { logger } from '@twilio-alpha/openapi-mcp-server';
 
 import TwilioOpenAPIMCPServer from '@app/server';
 import { args, auth, type AccountCredentials } from '@app/utils';

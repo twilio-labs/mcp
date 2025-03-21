@@ -1,4 +1,4 @@
-import { logger } from '@twilio-alpha/openapi-mcp-server/build';
+import { logger } from '@twilio-alpha/openapi-mcp-server';
 import inquirer from 'inquirer';
 
 import { auth } from '@app/utils';

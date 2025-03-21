@@ -6,7 +6,7 @@ import {
   API,
   OpenAPIMCPServer,
   ToolFilters,
-} from '@twilio-alpha/openapi-mcp-server/build';
+} from '@twilio-alpha/openapi-mcp-server';
 
 import { Credentials } from '@app/types';
 import { toolRequiresAccountSid } from '@app/utils';
@@ -51,6 +51,7 @@ export default class TwilioOpenAPIMCPServer extends OpenAPIMCPServer {
       typeof providedSid === 'string' &&
       /^AC[a-fA-F0-9]{32}$/.test(providedSid);
     if (requiresAccountSid && !hasAccountSid) {
+      // eslint-disable-next-line no-param-reassign
       body[accountSidKey] = this.config.accountSid;
     }
 
