@@ -4,10 +4,8 @@ import path from 'path';
 import SwaggerParser from '@apidevtools/swagger-parser';
 import { OpenAPIV3 } from 'openapi-types';
 
-import { Service } from '@app/utils/args';
-
 export interface OpenAPISpec {
-  service: Service;
+  service: string;
   path: string;
   document: OpenAPIV3.Document<OpenAPIV3.OperationObject>;
 }
@@ -25,19 +23,18 @@ export default async function readSpecs(
         return readSpecs(fullPath, baseDir);
       }
 
-      const relativePath = path.relative(baseDir, fullPath);
-      const parts = relativePath.split(path.sep);
+      // Check of yaml only
+      if (!entry.name.endsWith('.yaml') && !entry.name.endsWith('.yml')) {
+        return null;
+      }
+
       const document = (await SwaggerParser.bundle(
         fullPath,
       )) as OpenAPIV3.Document;
-      const match = parts[0].match(/^twilio_(.*?)_(v\d+)\.yaml$/);
 
       return [
         {
-          service: {
-            name: match?.[1] ?? parts[0],
-            version: match?.[2] ?? parts[1],
-          },
+          service: path.basename(fullPath, path.extname(fullPath)),
           path: fullPath,
           document,
         },
@@ -45,5 +42,5 @@ export default async function readSpecs(
     }),
   );
 
-  return specs.flat();
+  return specs.filter(Boolean).flat() as OpenAPISpec[];
 }

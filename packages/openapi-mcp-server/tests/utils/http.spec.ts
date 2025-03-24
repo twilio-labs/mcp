@@ -1,7 +1,7 @@
 import fetch, { Response } from 'node-fetch';
-import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
+import { beforeEach, describe, expect, it, Mock, test, vi } from 'vitest';
 
-import Http, { Credentials } from '@app/utils/http';
+import Http, { Authorization, interpolateUrl } from '@app/utils/http';
 
 // Mock node-fetch
 vi.mock('node-fetch', () => ({
@@ -9,25 +9,25 @@ vi.mock('node-fetch', () => ({
 }));
 
 describe('Http', () => {
-  const mockCredentials: Credentials = {
-    apiKey: 'test-api-key',
-    apiSecret: 'test-api-secret',
+  const mockCredentials: Authorization = {
+    type: 'BasicAuth',
+    username: 'test-username',
+    password: 'test-password',
   };
 
   const mockResponse = (status: number, jsonData: any, ok = true): Response => {
-    const response = {
+    return {
       ok,
       status,
       json: vi.fn().mockResolvedValue(jsonData),
       text: vi.fn().mockResolvedValue(JSON.stringify(jsonData)),
     } as unknown as Response;
-    return response;
   };
 
   let http: Http;
 
   beforeEach(() => {
-    http = new Http({ credentials: mockCredentials });
+    http = new Http({ authorization: mockCredentials });
     vi.clearAllMocks();
   });
 
@@ -44,7 +44,7 @@ describe('Http', () => {
         expect.objectContaining({
           method: 'GET',
           headers: expect.objectContaining({
-            Authorization: `Basic ${Buffer.from('test-api-key:test-api-secret').toString('base64')}`,
+            Authorization: 'Basic dGVzdC11c2VybmFtZTp0ZXN0LXBhc3N3b3Jk',
             'Content-Type': 'application/json',
           }),
         }),
@@ -129,7 +129,7 @@ describe('Http', () => {
       const result = await http.post(
         'https://api.example.com/form',
         requestBody,
-        { urlencoded: true },
+        { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } },
       );
 
       expect(fetch).toHaveBeenCalledWith(
@@ -190,6 +190,7 @@ describe('Http', () => {
         expect.objectContaining({
           method: 'PUT',
           headers: expect.objectContaining({
+            Authorization: 'Basic dGVzdC11c2VybmFtZTp0ZXN0LXBhc3N3b3Jk',
             'Content-Type': 'application/json',
           }),
           body: JSON.stringify(requestBody),
@@ -214,7 +215,11 @@ describe('Http', () => {
       const result = await http.put(
         'https://api.example.com/update/12345',
         requestBody,
-        { urlencoded: true },
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+        },
       );
 
       expect(fetch).toHaveBeenCalledWith(
@@ -309,8 +314,9 @@ describe('Http', () => {
       const mockResponseObj = mockResponse(200, mockData);
       const customHeaders = { 'X-Custom-Header': 'custom-value' };
 
-      // Modify the Http class to expose headers for testing
-      const httpWithCustomHeaders = new Http({ credentials: mockCredentials });
+      const httpWithCustomHeaders = new Http({
+        authorization: mockCredentials,
+      });
       // @ts-ignore - accessing private method for testing
       const makeRequest = vi.spyOn(httpWithCustomHeaders, 'make');
 
@@ -342,6 +348,80 @@ describe('Http', () => {
         method: 'GET',
         headers: customHeaders,
       });
+    });
+  });
+
+  describe('interpolateUrl', () => {
+    test('should return the original URL if no params are provided', () => {
+      expect(interpolateUrl('/api/v1/resource')).toBe('/api/v1/resource');
+      expect(interpolateUrl('/api/v1/resource', undefined)).toBe(
+        '/api/v1/resource',
+      );
+    });
+
+    test('should return the original URL if params is an array', () => {
+      expect(interpolateUrl('/api/v1/resource', [] as any)).toBe(
+        '/api/v1/resource',
+      );
+    });
+
+    test('should replace string parameters in the URL', () => {
+      expect(interpolateUrl('/api/{version}/resource', { version: 'v1' })).toBe(
+        '/api/v1/resource',
+      );
+
+      expect(
+        interpolateUrl('/api/{version}/resource/{id}', {
+          version: 'v1',
+          id: 'abc123',
+        }),
+      ).toBe('/api/v1/resource/abc123');
+    });
+
+    test('should replace number parameters in the URL', () => {
+      expect(interpolateUrl('/api/v1/resource/{id}', { id: 123 })).toBe(
+        '/api/v1/resource/123',
+      );
+    });
+
+    test('should replace boolean parameters in the URL', () => {
+      expect(
+        interpolateUrl('/api/v1/resource/{active}', { active: true }),
+      ).toBe('/api/v1/resource/true');
+
+      expect(
+        interpolateUrl('/api/v1/resource/{active}', { active: false }),
+      ).toBe('/api/v1/resource/false');
+    });
+
+    test('should not replace parameters of unsupported types', () => {
+      expect(
+        interpolateUrl('/api/v1/resource/{obj}', { obj: { key: 'value' } }),
+      ).toBe('/api/v1/resource/{obj}');
+
+      expect(interpolateUrl('/api/v1/resource/{arr}', { arr: [1, 2, 3] })).toBe(
+        '/api/v1/resource/{arr}',
+      );
+
+      expect(interpolateUrl('/api/v1/resource/{nul}', { nul: null })).toBe(
+        '/api/v1/resource/{nul}',
+      );
+    });
+
+    test('should handle multiple replacements of different types', () => {
+      expect(
+        interpolateUrl('/api/{version}/resource/{id}/status/{active}', {
+          version: 'v1',
+          id: 123,
+          active: true,
+        }),
+      ).toBe('/api/v1/resource/123/status/true');
+    });
+
+    test('should leave placeholders for missing parameters', () => {
+      expect(
+        interpolateUrl('/api/{version}/resource/{id}', { version: 'v1' }),
+      ).toBe('/api/v1/resource/{id}');
     });
   });
 });

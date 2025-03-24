@@ -19,25 +19,83 @@ type ErrorResponse = {
   response?: Response;
 };
 
-type HttpResponse<T> = SuccessResponse<T> | ErrorResponse;
+export type HttpResponse<T> = SuccessResponse<T> | ErrorResponse;
 
 type RequestOption = {
-  urlencoded?: boolean;
+  headers?: Record<string, string>;
 };
 type HttpRequest = RequestOption & {
   method: HttpMethod;
   url: string;
-  headers?: Record<string, unknown>;
+  headers?: Record<string, string>;
   body?: Record<string, unknown>;
 };
 
-export type Credentials = {
-  apiKey: string;
-  apiSecret: string;
+export type Authorization = {
+  type: 'BasicAuth';
+  username: string;
+  password: string;
 };
 
-type Configuration = {
-  credentials: Credentials;
+export type Configuration = {
+  authorization?: Authorization;
+};
+
+/**
+ * Get the authorization header
+ * @param authorization
+ */
+function getAuthorization(
+  authorization?: Authorization,
+): Record<string, string> {
+  if (!authorization) {
+    return {};
+  }
+
+  if (authorization.type === 'BasicAuth') {
+    return {
+      Authorization: `Basic ${Buffer.from(
+        `${authorization.username}:${authorization.password}`,
+      ).toString('base64')}`,
+    };
+  }
+
+  throw new Error(`Unsupported authorization type: ${authorization.type}`);
+}
+
+/**
+ * Interpolate URL with params
+ * @param url
+ * @param params
+ */
+export const interpolateUrl = (
+  url: string,
+  params?: Record<string, unknown>,
+) => {
+  if (!params) {
+    return url;
+  }
+
+  if (Array.isArray(params)) {
+    return url;
+  }
+
+  return url.replace(/{(.*?)}/g, (_, key) => {
+    const value = params[key];
+    if (typeof value === 'string') {
+      return value;
+    }
+
+    if (typeof value === 'number') {
+      return value.toString();
+    }
+
+    if (typeof value === 'boolean') {
+      return value.toString();
+    }
+
+    return `{${key}}`;
+  });
 };
 
 export default class Http {
@@ -46,13 +104,10 @@ export default class Http {
   private readonly logger;
 
   constructor(config: Configuration) {
-    const credentials = Buffer.from(
-      `${config.credentials.apiKey}:${config.credentials.apiSecret}`,
-    ).toString('base64');
     this.defaultRequest = {
       headers: {
-        Authorization: `Basic ${credentials}`,
         'Content-Type': 'application/json',
+        ...getAuthorization(config.authorization),
       },
     };
 
@@ -77,15 +132,9 @@ export default class Http {
           ...request.headers,
         };
       }
-      if (request.urlencoded) {
-        options.headers = {
-          ...options.headers,
-          'Content-Type': 'application/x-www-form-urlencoded',
-        };
-      }
 
       if (['POST', 'PUT'].includes(request.method) && request.body) {
-        options.body = Http.getBody(request.body, request.urlencoded ?? false);
+        options.body = Http.getBody(request.body, request.headers);
       }
 
       logger.debug(
@@ -129,11 +178,16 @@ export default class Http {
   /**
    * Makes a GET request
    * @param url the url to make the request to
+   * @param options additional options for the request
    */
-  public async get<T>(url: string): Promise<HttpResponse<T>> {
+  public async get<T>(
+    url: string,
+    options?: RequestOption,
+  ): Promise<HttpResponse<T>> {
     return this.make<T>({
       url,
       method: 'GET',
+      ...options,
     });
   }
 
@@ -194,14 +248,15 @@ export default class Http {
   /**
    * Returns the body of the request
    * @param body
-   * @param urlencoded
+   * @param headers
    * @private
    */
   private static getBody(
     body: Record<string, unknown>,
-    urlencoded: boolean,
+    headers?: Record<string, string>,
   ): string {
-    if (urlencoded) {
+    const contentType = headers?.['Content-Type'] as string;
+    if (contentType === 'application/x-www-form-urlencoded') {
       return qs.stringify(body);
     }
 

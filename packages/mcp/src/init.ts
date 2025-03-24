@@ -1,6 +1,7 @@
+import { logger } from '@twilio-alpha/openapi-mcp-server';
 import inquirer from 'inquirer';
 
-import { auth, logger } from '@app/utils';
+import { auth } from '@app/utils';
 
 export default async function init() {
   const answers = await inquirer.prompt([

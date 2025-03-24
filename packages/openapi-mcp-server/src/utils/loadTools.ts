@@ -2,9 +2,15 @@ import { Tool as MCPTool } from '@modelcontextprotocol/sdk/types.js';
 import { nanoid } from 'nanoid';
 import { OpenAPIV3 } from 'openapi-types';
 
-import { API, Filter, HttpMethod } from '@app/types.js';
+import { API, HttpMethod } from '@app/types';
 
-import { OpenAPISpec } from './specs.js';
+import { OpenAPISpec } from './readSpecs';
+
+export type ToolFilters = {
+  services?: string[];
+  tags?: string[];
+  callback?: (spec: OpenAPISpec) => boolean;
+};
 
 const SUPPORTED_METHODS = ['get', 'delete', 'post', 'put'];
 
@@ -26,24 +32,26 @@ const trimSlashes = (str: string) => {
   return str.replace(/^\/+|\/+$/g, '');
 };
 
-export default function loadTools(specs: OpenAPISpec[], filter: Filter) {
+export default function loadTools(specs: OpenAPISpec[], filters?: ToolFilters) {
   const tools: Map<string, Tool> = new Map();
   const apis: Map<string, API> = new Map();
-  const { services, tags } = filter;
+  const services = filters?.services ?? [];
 
   specs
+    .filter((spec) => spec.document.paths)
     .filter((spec) => {
       if (services.length === 0) {
         return true;
       }
 
-      return services.some(
-        (service) =>
-          service.name === spec.service.name &&
-          service.version === spec.service.version,
-      );
+      return services.some((service) => spec.service === service);
     })
-    .filter((spec) => spec.document.paths)
+    .filter((spec) => {
+      if (filters?.callback) {
+        return filters.callback(spec);
+      }
+      return true;
+    })
     .forEach((spec) => {
       const { title } = spec.document.info;
       const description =
@@ -64,6 +72,7 @@ export default function loadTools(specs: OpenAPISpec[], filter: Filter) {
               return false;
             }
 
+            const tags = filters?.tags ?? [];
             if (tags.length === 0) {
               return true;
             }
@@ -91,7 +100,7 @@ export default function loadTools(specs: OpenAPISpec[], filter: Filter) {
             const api: API = {
               method: method.toUpperCase() as HttpMethod,
               path: `${trimSlashes(baseURL)}/${trimSlashes(path)}`,
-              urlencoded: false,
+              contentType: 'application/json',
             };
 
             if (operation.parameters) {
@@ -115,7 +124,7 @@ export default function loadTools(specs: OpenAPISpec[], filter: Filter) {
               // @ts-ignore
               operation.requestBody as OpenAPIV3.RequestBodyObject;
             if (requestBody?.content?.['application/x-www-form-urlencoded']) {
-              api.urlencoded = true;
+              api.contentType = 'application/x-www-form-urlencoded';
             }
             const content =
               requestBody?.content?.['application/x-www-form-urlencoded'] ??
