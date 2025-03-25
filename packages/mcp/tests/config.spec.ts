@@ -16,7 +16,13 @@ vi.mock('@app/utils');
 
 interface ValidatedQuestion extends Question<Answers> {
   validate?: (input: string) => boolean | string;
+  name: string;
 }
+
+// Helper to get around type issues with inquirer.prompt mocking
+const mockInquirerPrompt = (impl: (questions: Question[] | Question) => any) => {
+  return vi.mocked(inquirer.prompt).mockImplementation(impl);
+};
 
 describe('config', () => {
   beforeEach(() => {
@@ -31,15 +37,17 @@ describe('config', () => {
 
   it('should prompt for client selection', async () => {
     // Mock the prompts sequence
-    vi.mocked(inquirer.prompt)
-      .mockResolvedValueOnce({ clientConfig: 'cursor' }) // Client selection
-      .mockResolvedValueOnce({ tags: false }) // OpenAPI tags (declined)
-      .mockResolvedValueOnce({ services: false }) // OpenAPI services (declined)
-      .mockResolvedValueOnce({ // Credentials
-        accountSid: 'AC1234567890abcdef1234567890abcdef',
-        apiKey: 'SK1234567890abcdef1234567890abcdef',
-        apiSecret: 'secret123',
-      });
+    const mockPrompt = vi.mocked(inquirer.prompt);
+    
+    // Setup the mock to return the desired values
+    mockPrompt.mockResolvedValueOnce({ clientConfig: 'cursor' } as any);
+    mockPrompt.mockResolvedValueOnce({ tags: false } as any);
+    mockPrompt.mockResolvedValueOnce({ services: false } as any);
+    mockPrompt.mockResolvedValueOnce({
+      accountSid: 'AC1234567890abcdef1234567890abcdef',
+      apiKey: 'SK1234567890abcdef1234567890abcdef',
+      apiSecret: 'secret123',
+    } as any);
 
     // Start the config process
     await config();
@@ -57,26 +65,16 @@ describe('config', () => {
   it('should prompt for credentials after OpenAPI configuration', async () => {
     // Mock the prompts sequence
     const mockPrompt = vi.mocked(inquirer.prompt);
-    mockPrompt.mockImplementation(async (questions: Question[] | Question) => {
-      const firstQuestion = Array.isArray(questions) ? questions[0] : questions;
-      
-      // Return different responses based on the question type
-      if (firstQuestion.name === 'clientConfig') {
-        return { clientConfig: 'cursor' };
-      } else if (firstQuestion.name === 'tags') {
-        return { tags: false };
-      } else if (firstQuestion.name === 'services') {
-        return { services: false };
-      } else if (firstQuestion.name === 'accountSid') {
-        // This is the credentials prompt
-        return {
-          accountSid: 'AC1234567890abcdef1234567890abcdef',
-          apiKey: 'SK1234567890abcdef1234567890abcdef',
-          apiSecret: 'secret123',
-        };
-      }
-      return {};
-    });
+    
+    // Setup the mock to return the desired values
+    mockPrompt.mockResolvedValueOnce({ clientConfig: 'cursor' } as any);
+    mockPrompt.mockResolvedValueOnce({ tags: false } as any);
+    mockPrompt.mockResolvedValueOnce({ services: false } as any);
+    mockPrompt.mockResolvedValueOnce({
+      accountSid: 'AC1234567890abcdef1234567890abcdef',
+      apiKey: 'SK1234567890abcdef1234567890abcdef',
+      apiSecret: 'secret123',
+    } as any);
 
     // Start the config process
     await config();
@@ -121,22 +119,20 @@ describe('config', () => {
   it('should validate account SID format', async () => {
     let validationFunction: ((input: string) => boolean | string) | undefined;
 
-    // Mock inquirer.prompt to capture the validation function
-    const mockPrompt = vi.mocked(inquirer.prompt);
-    mockPrompt.mockImplementation(async (questions: Question[] | Question) => {
-      const accountSidQuestion = Array.isArray(questions) 
-        ? questions.find(q => q.name === 'accountSid')
-        : undefined;
-      
-      if (accountSidQuestion?.validate) {
-        validationFunction = accountSidQuestion.validate;
+    // Setup inquirer.prompt to capture validation function
+    mockInquirerPrompt((questions: Question[] | Question) => {
+      if (Array.isArray(questions)) {
+        const accountSidQuestion = questions.find(q => q.name === 'accountSid') as ValidatedQuestion;
+        if (accountSidQuestion?.validate) {
+          validationFunction = accountSidQuestion.validate;
+        }
       }
-
+      
       return {
         accountSid: 'AC1234567890abcdef1234567890abcdef',
         apiKey: 'SK1234567890abcdef1234567890abcdef',
         apiSecret: 'secret123',
-      };
+      } as any;
     });
 
     // Start the config process
@@ -156,22 +152,20 @@ describe('config', () => {
   it('should validate API Key format', async () => {
     let validationFunction: ((input: string) => boolean | string) | undefined;
 
-    // Mock inquirer.prompt to capture the validation function
-    const mockPrompt = vi.mocked(inquirer.prompt);
-    mockPrompt.mockImplementation(async (questions: Question[] | Question) => {
-      const apiKeyQuestion = Array.isArray(questions) 
-        ? questions.find(q => q.name === 'apiKey')
-        : undefined;
-      
-      if (apiKeyQuestion?.validate) {
-        validationFunction = apiKeyQuestion.validate;
+    // Setup inquirer.prompt to capture validation function
+    mockInquirerPrompt((questions: Question[] | Question) => {
+      if (Array.isArray(questions)) {
+        const apiKeyQuestion = questions.find(q => q.name === 'apiKey') as ValidatedQuestion;
+        if (apiKeyQuestion?.validate) {
+          validationFunction = apiKeyQuestion.validate;
+        }
       }
-
+      
       return {
         accountSid: 'AC1234567890abcdef1234567890abcdef',
         apiKey: 'SK1234567890abcdef1234567890abcdef',
         apiSecret: 'secret123',
-      };
+      } as any;
     });
 
     // Start the config process
@@ -191,22 +185,20 @@ describe('config', () => {
   it('should validate API Secret is not empty', async () => {
     let validationFunction: ((input: string) => boolean | string) | undefined;
 
-    // Mock inquirer.prompt to capture the validation function
-    const mockPrompt = vi.mocked(inquirer.prompt);
-    mockPrompt.mockImplementation(async (questions: Question[] | Question) => {
-      const apiSecretQuestion = Array.isArray(questions) 
-        ? questions.find(q => q.name === 'apiSecret')
-        : undefined;
-      
-      if (apiSecretQuestion?.validate) {
-        validationFunction = apiSecretQuestion.validate;
+    // Setup inquirer.prompt to capture validation function
+    mockInquirerPrompt((questions: Question[] | Question) => {
+      if (Array.isArray(questions)) {
+        const apiSecretQuestion = questions.find(q => q.name === 'apiSecret') as ValidatedQuestion;
+        if (apiSecretQuestion?.validate) {
+          validationFunction = apiSecretQuestion.validate;
+        }
       }
-
+      
       return {
         accountSid: 'AC1234567890abcdef1234567890abcdef',
         apiKey: 'SK1234567890abcdef1234567890abcdef',
         apiSecret: 'secret123',
-      };
+      } as any;
     });
 
     // Start the config process
