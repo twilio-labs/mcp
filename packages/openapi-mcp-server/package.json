@@ -1,7 +1,12 @@
 {
   "name": "@twilio-alpha/openapi-mcp-server",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "description": "A Model Context Protocol server that to expose OpenAPI specs.",
+  "keywords": [
+    "model context protocol",
+    "mcp",
+    "openapi"
+  ],
   "license": "ISC",
   "author": "Twilio",
   "type": "module",
