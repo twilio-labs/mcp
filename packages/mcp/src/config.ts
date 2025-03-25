@@ -232,7 +232,7 @@ async function promptForOpenAPIConfig(): Promise<OpenAPIConfig> {
     return { services };
   }
 
-  console.log(
+  console.info(
     chalk.yellow('→'),
     `No services selected; the default service will be used, \`${DEFAULT_SERVICE}\`.`,
   );
@@ -289,13 +289,7 @@ export default async function config() {
     if (!shouldOverwrite) {
       console.info(chalk.green('✔'), 'Keeping existing credentials');
     }
-  }
-
-  if (
-    !currentCredentials ||
-    (currentCredentials &&
-      (await promptForOverwrite(currentCredentials.accountSid)))
-  ) {
+  } else {
     const authAnswers = await promptForCredentials();
     await auth.setCredentials(
       authAnswers.accountSid,
@@ -306,6 +300,7 @@ export default async function config() {
   }
 
   const openAPIConfig = await promptForOpenAPIConfig();
+
   const executableArgs = ['-y', '@twilio-alpha/mcp'];
 
   if (openAPIConfig.tags) {
