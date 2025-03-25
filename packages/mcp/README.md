@@ -21,6 +21,8 @@ The easiest way to get started is to edit the configuration of your client to po
 }
 ```
 
+Alternatively, use the `npx @twilio-alpha config` command to set your credentials, choose tags and services, and automatically save MCP client configuration for Cursor or Claude Desktop.
+
 Visit [Twilio API Keys docs](https://www.twilio.com/docs/iam/api-keys) for information on how to find/create your apiKey/apiSecret.
 
 ## Configuration Parameters

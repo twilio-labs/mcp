@@ -9,6 +9,9 @@
   "workspaces": [
     "packages/*"
   ],
+  "bin": {
+    "twilio-mcp-server": "./packages/mcp/build/index.js"
+  },
   "scripts": {
     "build": "npm run build --workspaces",
     "lint": "npm run lint --workspaces",

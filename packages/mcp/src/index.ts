@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 import { logger } from '@twilio-alpha/openapi-mcp-server';
 
-import init from '@app/init';
+import config from '@app/config';
 import main from '@app/main';
 
 const command = process.argv[2];
 
-if (command === 'init') {
-  init().catch((error) => {
-    logger.error(`Fatal error in init(): ${error}`);
+if (command === 'config') {
+  config().catch((error) => {
+    logger.error(`Fatal error in config(): ${error}`);
     process.exit(1);
   });
 } else {
