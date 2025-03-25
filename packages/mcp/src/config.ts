@@ -231,8 +231,6 @@ async function configureClaudeDesktop(executableArgs: string[]) {
   console.info(chalk.green('✔'), 'Claude Desktop configuration set!');
 }
 
-
-
 export default async function config() {
   let currentCredentials = await auth.getCredentials();
   let overwriteAnswers: { overwrite: boolean } | undefined;
