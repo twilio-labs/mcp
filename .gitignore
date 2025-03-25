@@ -141,3 +141,5 @@ build/
 open-api/
 twilio-oai
 .local/
+
+.DS_Store

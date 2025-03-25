@@ -26,9 +26,9 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
+    "@twilio-alpha/openapi-mcp-server": "*",
     "@apidevtools/swagger-parser": "^10.1.1",
     "@modelcontextprotocol/sdk": "^1.7.0",
-    "@twilio-alpha/openapi-mcp-server": "*",
     "chalk": "^5.4.1",
     "inquirer": "^12.5.0",
     "keytar": "^7.9.0",
