@@ -103,44 +103,44 @@ If you prefer to play around with the server, you can clone the repository and r
 
 The following services can be used with the `--services` parameter:
 
-- `accounts_v1` - Account Management API
-- `api_v2010` - Core Twilio API
-- `assistants_v1` - Autopilot API
-- `bulkexports_v1` - Bulk Exports API
-- `chat_v1`, `chat_v2`, `chat_v3` - Chat API
-- `content_v1`, `content_v2` - Content API
-- `conversations_v1` - Conversations API
-- `events_v1` - Events API
-- `flex_v1`, `flex_v2` - Flex API
-- `frontline_v1` - Frontline API
-- `iam_v1` - Identity and Access Management API
-- `insights_v1` - Insights API
-- `intelligence_v2` - Intelligence API
-- `ip_messaging_v1`, `ip_messaging_v2` - IP Messaging API
-- `lookups_v1`, `lookups_v2` - Lookups API
-- `marketplace_v1` - Marketplace API
-- `messaging_v1` - Messaging API
-- `microvisor_v1` - Microvisor API
-- `monitor_v1`, `monitor_v2` - Monitor API
-- `notify_v1` - Notify API
-- `numbers_v1`, `numbers_v2` - Phone Numbers API
-- `oauth_v1` - OAuth API
-- `pricing_v1`, `pricing_v2` - Pricing API
-- `proxy_v1` - Proxy API
-- `routes_v2` - Routes API
-- `serverless_v1` - Serverless API
-- `studio_v1`, `studio_v2` - Studio API
-- `supersim_v1` - Super SIM API
-- `sync_v1` - Sync API
-- `taskrouter_v1` - TaskRouter API
-- `trunking_v1` - Trunking API
-- `trusthub_v1` - Trust Hub API
-- `verify_v2` - Verify API
-- `video_v1` - Video API
-- `voice_v1` - Voice API
-- `wireless_v1` - Wireless API
+- `twilio_accounts_v1` - Account Management API
+- `twilio_api_v2010` - Core Twilio API
+- `twilio_assistants_v1` - Autopilot API
+- `twilio_bulkexports_v1` - Bulk Exports API
+- `twilio_chat_v1`, `twilio_chat_v2`, `twilio_chat_v3` - Chat API
+- `twilio_content_v1`, `twilio_content_v2` - Content API
+- `twilio_conversations_v1` - Conversations API
+- `twilio_events_v1` - Events API
+- `twilio_flex_v1`, `twilio_flex_v2` - Flex API
+- `twilio_frontline_v1` - Frontline API
+- `twilio_iam_v1` - Identity and Access Management API
+- `twilio_insights_v1` - Insights API
+- `twilio_intelligence_v2` - Intelligence API
+- `twilio_ip_messaging_v1`, `twilio_ip_messaging_v2` - IP Messaging API
+- `twilio_lookups_v1`, `twilio_lookups_v2` - Lookups API
+- `twilio_marketplace_v1` - Marketplace API
+- `twilio_messaging_v1` - Messaging API
+- `twilio_microvisor_v1` - Microvisor API
+- `twilio_monitor_v1`, `twilio_monitor_v2` - Monitor API
+- `twilio_notify_v1` - Notify API
+- `twilio_numbers_v1`, `twilio_numbers_v2` - Phone Numbers API
+- `twilio_oauth_v1` - OAuth API
+- `twilio_pricing_v1`, `twilio_pricing_v2` - Pricing API
+- `twilio_proxy_v1` - Proxy API
+- `twilio_routes_v2` - Routes API
+- `twilio_serverless_v1` - Serverless API
+- `twilio_studio_v1`, `twilio_studio_v2` - Studio API
+- `twilio_supersim_v1` - Super SIM API
+- `twilio_sync_v1` - Sync API
+- `twilio_taskrouter_v1` - TaskRouter API
+- `twilio_trunking_v1` - Trunking API
+- `twilio_trusthub_v1` - Trust Hub API
+- `twilio_verify_v2` - Verify API
+- `twilio_video_v1` - Video API
+- `twilio_voice_v1` - Voice API
+- `twilio_wireless_v1` - Wireless API
 
-For example, to use the Chat API v3, you would specify `--services chat_v3` in your configuration.
+For example, to use the Chat API v3, you would specify `--services twilio_chat_v3` in your configuration.
 
 ## Available Tags
 
