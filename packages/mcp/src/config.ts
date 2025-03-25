@@ -306,7 +306,7 @@ export default async function config() {
   }
 
   const openAPIConfig = await promptForOpenAPIConfig();
-  const executableArgs = ['@twilio-alpha/mcp'];
+  const executableArgs = ['-y', '@twilio-alpha/mcp'];
 
   if (openAPIConfig.tags) {
     executableArgs.push('--tags', openAPIConfig.tags);
