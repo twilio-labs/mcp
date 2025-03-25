@@ -1,0 +1,33 @@
+{
+  "name": "@twilio-alpha/mcp-monorepo",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Model Context Protocol monorepo",
+  "license": "ISC",
+  "author": "Twilio",
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "lint": "npm run lint --workspaces",
+    "lint:fix": "npm run lint:fix --workspaces",
+    "prepare": "npm run prepare --workspaces && husky && cd packages/openapi-mcp-server && npm run build",
+    "test": "npm run test --workspaces",
+    "test:coverage": "npm run test:coverage --workspaces",
+    "test:watch": "npm run test:watch --workspaces"
+  },
+  "lint-staged": {
+    "src/**/*.ts": [
+      "npm run lint:fix"
+    ],
+    "tests/**/*.ts": [
+      "npm run lint:fix"
+    ]
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^15.5.0"
+  }
+}
