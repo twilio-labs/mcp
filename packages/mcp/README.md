@@ -98,3 +98,113 @@ If you prefer to play around with the server, you can clone the repository and r
   }
 }
 ```
+
+## Available Services
+
+The following services can be used with the `--services` parameter:
+
+- `accounts_v1` - Account Management API
+- `api_v2010` - Core Twilio API
+- `assistants_v1` - Autopilot API
+- `bulkexports_v1` - Bulk Exports API
+- `chat_v1`, `chat_v2`, `chat_v3` - Chat API
+- `content_v1`, `content_v2` - Content API
+- `conversations_v1` - Conversations API
+- `events_v1` - Events API
+- `flex_v1`, `flex_v2` - Flex API
+- `frontline_v1` - Frontline API
+- `iam_v1` - Identity and Access Management API
+- `insights_v1` - Insights API
+- `intelligence_v2` - Intelligence API
+- `ip_messaging_v1`, `ip_messaging_v2` - IP Messaging API
+- `lookups_v1`, `lookups_v2` - Lookups API
+- `marketplace_v1` - Marketplace API
+- `messaging_v1` - Messaging API
+- `microvisor_v1` - Microvisor API
+- `monitor_v1`, `monitor_v2` - Monitor API
+- `notify_v1` - Notify API
+- `numbers_v1`, `numbers_v2` - Phone Numbers API
+- `oauth_v1` - OAuth API
+- `pricing_v1`, `pricing_v2` - Pricing API
+- `proxy_v1` - Proxy API
+- `routes_v2` - Routes API
+- `serverless_v1` - Serverless API
+- `studio_v1`, `studio_v2` - Studio API
+- `supersim_v1` - Super SIM API
+- `sync_v1` - Sync API
+- `taskrouter_v1` - TaskRouter API
+- `trunking_v1` - Trunking API
+- `trusthub_v1` - Trust Hub API
+- `verify_v2` - Verify API
+- `video_v1` - Video API
+- `voice_v1` - Voice API
+- `wireless_v1` - Wireless API
+
+For example, to use the Chat API v3, you would specify `--services chat_v3` in your configuration.
+
+## Available Tags
+
+The following tags can be used with the `--tags` parameter to select specific API endpoints:
+
+### Accounts API Tags
+- `AccountsV1AuthTokenPromotion` - Auth Token Promotion
+- `AccountsV1Aws` - AWS Integration
+- `AccountsV1BulkConsents` - Bulk Consents Management
+- `AccountsV1BulkContacts` - Bulk Contacts Management
+- `AccountsV1PublicKey` - Public Key Management
+- `AccountsV1Safelist` - Safelist Management
+- `AccountsV1SecondaryAuthToken` - Secondary Auth Token Management
+
+### API 2010 Tags (Core Twilio API)
+- `Api20100401Account` - Account Management
+- `Api20100401AddOnResult` - AddOn Results
+- `Api20100401Address` - Address Management
+- `Api20100401Application` - Application Management
+- `Api20100401Call` - Call Management
+- `Api20100401Conference` - Conference Management
+- `Api20100401IncomingPhoneNumber` - Incoming Phone Number Management
+- `Api20100401Message` - Message Management
+- `Api20100401Recording` - Recording Management
+- `Api20100401Token` - Token Management
+- `Api20100401Transcription` - Transcription Management
+- `Api20100401Usage` - Usage Management
+
+### Studio API Tags
+- `StudioV2Execution` - Flow Execution Management
+- `StudioV2ExecutionContext` - Flow Execution Context
+- `StudioV2ExecutionStep` - Flow Execution Steps
+- `StudioV2Flow` - Flow Management
+- `StudioV2FlowRevision` - Flow Revision Management
+
+### Conversations API Tags
+- `ConversationsV1Conversation` - Conversation Management
+- `ConversationsV1Message` - Message Management
+- `ConversationsV1Participant` - Participant Management
+- `ConversationsV1Service` - Service Management
+- `ConversationsV1User` - User Management
+
+### Serverless API Tags
+- `ServerlessV1Asset` - Asset Management
+- `ServerlessV1AssetVersion` - Asset Version Management
+- `ServerlessV1Build` - Build Management
+- `ServerlessV1Deployment` - Deployment Management
+- `ServerlessV1Environment` - Environment Management
+- `ServerlessV1Function` - Function Management
+- `ServerlessV1Service` - Service Management
+- `ServerlessV1Variable` - Environment Variable Management
+
+### TaskRouter API Tags
+- `TaskrouterV1Activity` - Activity Management
+- `TaskrouterV1Event` - Event Management
+- `TaskrouterV1Task` - Task Management
+- `TaskrouterV1TaskChannel` - Task Channel Management
+- `TaskrouterV1TaskQueue` - Task Queue Management
+- `TaskrouterV1TaskReservation` - Task Reservation Management
+- `TaskrouterV1Worker` - Worker Management
+- `TaskrouterV1WorkerChannel` - Worker Channel Management
+- `TaskrouterV1WorkerReservation` - Worker Reservation Management
+- `TaskrouterV1Workflow` - Workflow Management
+- `TaskrouterV1Workspace` - Workspace Management
+- `TaskrouterV1WorkspaceStatistics` - Workspace Statistics
+
+This list includes the most commonly used tags. Each service has its own set of tags that follow the pattern `{ServiceName}{Version}{Resource}`. You can combine multiple tags by separating them with commas in your configuration.
