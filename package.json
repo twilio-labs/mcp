@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "description": "Model Context Protocol monorepo",
   "license": "ISC",
-  "author": "Twilioow do",
+  "author": "Twilio",
   "type": "module",
   "workspaces": [
     "packages/openapi-mcp-server",
