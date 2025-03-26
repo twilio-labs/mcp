@@ -1,4 +1,5 @@
-# mcp
+<p align="center"><img src="docs/twilioAlphaLogo.png" height="70" alt="Twilio Alpha"/></p>
+<h1 align="center">Twilio MCP</h1>
 
 This is a Proof of Concept (PoC) project by the ETI team, exploring the use of [Model Context Protocol](https://modelcontextprotocol.io/) (MCP) for the exchange of model context information between different tools.
 
@@ -100,3 +101,113 @@ If you prefer to play around with the server, you can clone the repository and r
   }
 }
 ```
+
+## Available Services
+
+The following services can be used with the `--services` parameter:
+
+- `twilio_accounts_v1` - Account Management API
+- `twilio_api_v2010` - Core Twilio API
+- `twilio_assistants_v1` - Autopilot API
+- `twilio_bulkexports_v1` - Bulk Exports API
+- `twilio_chat_v1`, `twilio_chat_v2`, `twilio_chat_v3` - Chat API
+- `twilio_content_v1`, `twilio_content_v2` - Content API
+- `twilio_conversations_v1` - Conversations API
+- `twilio_events_v1` - Events API
+- `twilio_flex_v1`, `twilio_flex_v2` - Flex API
+- `twilio_frontline_v1` - Frontline API
+- `twilio_iam_v1` - Identity and Access Management API
+- `twilio_insights_v1` - Insights API
+- `twilio_intelligence_v2` - Intelligence API
+- `twilio_ip_messaging_v1`, `twilio_ip_messaging_v2` - IP Messaging API
+- `twilio_lookups_v1`, `twilio_lookups_v2` - Lookups API
+- `twilio_marketplace_v1` - Marketplace API
+- `twilio_messaging_v1` - Messaging API
+- `twilio_microvisor_v1` - Microvisor API
+- `twilio_monitor_v1`, `twilio_monitor_v2` - Monitor API
+- `twilio_notify_v1` - Notify API
+- `twilio_numbers_v1`, `twilio_numbers_v2` - Phone Numbers API
+- `twilio_oauth_v1` - OAuth API
+- `twilio_pricing_v1`, `twilio_pricing_v2` - Pricing API
+- `twilio_proxy_v1` - Proxy API
+- `twilio_routes_v2` - Routes API
+- `twilio_serverless_v1` - Serverless API
+- `twilio_studio_v1`, `twilio_studio_v2` - Studio API
+- `twilio_supersim_v1` - Super SIM API
+- `twilio_sync_v1` - Sync API
+- `twilio_taskrouter_v1` - TaskRouter API
+- `twilio_trunking_v1` - Trunking API
+- `twilio_trusthub_v1` - Trust Hub API
+- `twilio_verify_v2` - Verify API
+- `twilio_video_v1` - Video API
+- `twilio_voice_v1` - Voice API
+- `twilio_wireless_v1` - Wireless API
+
+For example, to use the Chat API v3, you would specify `--services twilio_chat_v3` in your configuration.
+
+## Available Tags
+
+The following tags can be used with the `--tags` parameter to select specific API endpoints:
+
+### Accounts API Tags
+- `AccountsV1AuthTokenPromotion` - Auth Token Promotion
+- `AccountsV1Aws` - AWS Integration
+- `AccountsV1BulkConsents` - Bulk Consents Management
+- `AccountsV1BulkContacts` - Bulk Contacts Management
+- `AccountsV1PublicKey` - Public Key Management
+- `AccountsV1Safelist` - Safelist Management
+- `AccountsV1SecondaryAuthToken` - Secondary Auth Token Management
+
+### API 2010 Tags (Core Twilio API)
+- `Api20100401Account` - Account Management
+- `Api20100401AddOnResult` - AddOn Results
+- `Api20100401Address` - Address Management
+- `Api20100401Application` - Application Management
+- `Api20100401Call` - Call Management
+- `Api20100401Conference` - Conference Management
+- `Api20100401IncomingPhoneNumber` - Incoming Phone Number Management
+- `Api20100401Message` - Message Management
+- `Api20100401Recording` - Recording Management
+- `Api20100401Token` - Token Management
+- `Api20100401Transcription` - Transcription Management
+- `Api20100401Usage` - Usage Management
+
+### Studio API Tags
+- `StudioV2Execution` - Flow Execution Management
+- `StudioV2ExecutionContext` - Flow Execution Context
+- `StudioV2ExecutionStep` - Flow Execution Steps
+- `StudioV2Flow` - Flow Management
+- `StudioV2FlowRevision` - Flow Revision Management
+
+### Conversations API Tags
+- `ConversationsV1Conversation` - Conversation Management
+- `ConversationsV1Message` - Message Management
+- `ConversationsV1Participant` - Participant Management
+- `ConversationsV1Service` - Service Management
+- `ConversationsV1User` - User Management
+
+### Serverless API Tags
+- `ServerlessV1Asset` - Asset Management
+- `ServerlessV1AssetVersion` - Asset Version Management
+- `ServerlessV1Build` - Build Management
+- `ServerlessV1Deployment` - Deployment Management
+- `ServerlessV1Environment` - Environment Management
+- `ServerlessV1Function` - Function Management
+- `ServerlessV1Service` - Service Management
+- `ServerlessV1Variable` - Environment Variable Management
+
+### TaskRouter API Tags
+- `TaskrouterV1Activity` - Activity Management
+- `TaskrouterV1Event` - Event Management
+- `TaskrouterV1Task` - Task Management
+- `TaskrouterV1TaskChannel` - Task Channel Management
+- `TaskrouterV1TaskQueue` - Task Queue Management
+- `TaskrouterV1TaskReservation` - Task Reservation Management
+- `TaskrouterV1Worker` - Worker Management
+- `TaskrouterV1WorkerChannel` - Worker Channel Management
+- `TaskrouterV1WorkerReservation` - Worker Reservation Management
+- `TaskrouterV1Workflow` - Workflow Management
+- `TaskrouterV1Workspace` - Workspace Management
+- `TaskrouterV1WorkspaceStatistics` - Workspace Statistics
+
+This list includes the most commonly used tags. Each service has its own set of tags that follow the pattern `{ServiceName}{Version}{Resource}`. You can combine multiple tags by separating them with commas in your configuration.

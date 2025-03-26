@@ -143,3 +143,5 @@ twilio-oai
 .local/
 
 .DS_Store
+
+.vscode/
