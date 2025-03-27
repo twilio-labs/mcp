@@ -1,23 +1,14 @@
 name: Publish Package
 
 on:
-  release:
-    types: [created]
+  pull_request:
+    types: [closed]
+    branches:
+      - main
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - run: npm ci
-      - run: npm run test
-      - run: npm run lint
-
   publish-npm:
-    needs: build
+    if: github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'publish')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -27,6 +18,7 @@ jobs:
           registry-url: https://registry.npmjs.org/
       - run: npm ci
       - run: npm run build
-      - run: npm publish --workspaces
+      - name: Publish packages
+        run: npx changeset publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.twilio_alpha_npm_token}}
