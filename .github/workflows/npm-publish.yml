@@ -7,7 +7,19 @@ on:
       - main
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - run: npm run test
+      - run: npm run lint
+
   publish-npm:
+    needs: build
     if: github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'publish')
     runs-on: ubuntu-latest
     steps:
