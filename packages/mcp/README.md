@@ -13,7 +13,7 @@ The easiest way to get started is to edit the configuration of your client to po
     "twilio": {
       "command": "npx",
       "args": [
-        "-y", 
+        "-y",
         "@twilio-alpha/mcp",
         "YOUR_ACCOUNT_SID/YOUR_API_KEY:YOUR_API_SECRET"
       ]
@@ -28,9 +28,9 @@ Visit [Twilio API Keys docs](https://www.twilio.com/docs/iam/api-keys) for infor
 
 You can pass the following optional parameters to the `mcp` server:
 
-**--services (optional)** 
+**--services (optional)**
 
-The name of the services you want to use - this corresponds to the filename https://github.com/twilio/twilio-oai/tree/main/spec/yaml without the `twilio_` prefix - for example `chat_v3` for `twilio_chat_v3`.
+The name of the services you want to use - this corresponds to the filename https://github.com/twilio/twilio-oai/tree/main/spec/yaml
 
 **--tags (optional)**
 
@@ -38,7 +38,7 @@ The tag name as defined in each of the individual endpoints. If you want to filt
 
 ## Loading Separate APIs
 
-Due to the context size limitation of LLMs and the vast number of APIs available, you need to load separate APIs by passing the `--services/--tags` parameter. For example, to load the `chat_v3` API, you can pass `--services chat_v3`. If you need particular APIs from separate service files, you can use the `--tags` to individually select the endpoints. 
+Due to the context size limitation of LLMs and the vast number of APIs available, you need to load separate APIs by passing the `--services/--tags` parameter. For example, to load the `chat_v3` API, you can pass `--services chat_v3`. If you need particular APIs from separate service files, you can use the `--tags` to individually select the endpoints.
 
 ### Examples: Serverless Tools
 
@@ -50,11 +50,11 @@ Load all the Serverless API tools.
     "twilio": {
       "command": "npx",
       "args": [
-        "-y", 
+        "-y",
         "@twilio-alpha/mcp",
         "YOUR_ACCOUNT_SID/YOUR_API_KEY:YOUR_API_SECRET",
         "--services",
-        "serverless_v1"
+        "twilio_serverless_v1"
       ]
     }
   }
@@ -71,7 +71,7 @@ Load the Incoming Phone Number and the Studio Flows API tools.
     "twilio": {
       "command": "npx",
       "args": [
-        "-y", 
+        "-y",
         "@twilio-alpha/mcp",
         "YOUR_ACCOUNT_SID/YOUR_API_KEY:YOUR_API_SECRET",
         "--tags",
