@@ -281,14 +281,16 @@ async function configureClient(executableArgs: string[]) {
 
 export default async function config() {
   let currentCredentials = await auth.getCredentials();
-
+  let shouldOverwrite = false;
+  
   if (currentCredentials) {
-    const shouldOverwrite = await promptForOverwrite(
+    shouldOverwrite = await promptForOverwrite(
       currentCredentials.accountSid,
     );
-    if (!shouldOverwrite) {
-      console.info(chalk.green('✔'), 'Keeping existing credentials');
-    }
+  }
+
+  if (currentCredentials && !shouldOverwrite) {
+    console.info(chalk.green('✔'), 'Keeping existing credentials');
   } else {
     const authAnswers = await promptForCredentials();
     await auth.setCredentials(
