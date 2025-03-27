@@ -30,7 +30,6 @@ jobs:
           registry-url: https://registry.npmjs.org/
       - run: npm ci
       - run: npm run build
-      - name: Publish packages
-        run: npx changeset publish
+      - run: npx changeset publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.twilio_alpha_npm_token}}
