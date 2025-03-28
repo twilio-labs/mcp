@@ -1,4 +1,4 @@
-<p align="center"><img src="docs/twilioAlphaLogo.png" height="70" alt="Twilio Alpha"/></p>
+<p align="center"><img src="docs/twilioAlphaLogoLight.png#gh-dark-mode-only" height="70" alt="Twilio Alpha"/><img src="docs/twilioAlphaLogoDark.png#gh-light-mode-only" height="70" alt="Twilio Alpha"/></p>
 <h1 align="center">Twilio MCP</h1>
 
 This is a Proof of Concept (PoC) project by the ETI team, exploring the use of [Model Context Protocol](https://modelcontextprotocol.io/) (MCP) for the exchange of model context information between different tools.
