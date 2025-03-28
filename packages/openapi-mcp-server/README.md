@@ -35,7 +35,7 @@ You can pass the following optional parameters to the `mcp` server:
 
 If provided, the username/password will be used as basic-auth authentication with the API calls.
 
-**--services (optional)** 
+**--services (optional)**
 
 The name of the services you want to use - this corresponds to the individual filename inside the directory of your OpenAPI yaml files.
 
@@ -48,13 +48,13 @@ The tag name as defined in each of the individual endpoints. If you want to filt
 If you require more control over the server, you can extend `OpenAPIMCPServer`:
 
 ```ts
-class CustomOpenAPIServer extends {
+class CustomOpenAPIServer extends OpenAPIMCPServer {
   constructor(config: ExtendedConfiguration) {
     super({
       // these are required
       server: config.server,
       openAPIDir: '/path/to/openapi/yaml',
-      
+
       // These are optional
       filters: config.filters,
       authorization: {
@@ -63,7 +63,7 @@ class CustomOpenAPIServer extends {
         password: config.credentials.apiSecret,
       },
     });
-    
+
     // perform any other option
   }
 }
