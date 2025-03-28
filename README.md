@@ -1,4 +1,4 @@
-<p align="center"><img src="docs/twilioAlphaLogo.png" height="70" alt="Twilio Alpha"/></p>
+<p align="center"><img src="docs/twilioAlphaLogoLight.png#gh-dark-mode-only" height="70" alt="Twilio Alpha"/><img src="docs/twilioAlphaLogoDark.png#gh-light-mode-only" height="70" alt="Twilio Alpha"/></p>
 <h1 align="center">Twilio MCP Monorepo</h1>
 
 This is a monorepo for the Model Context Protocol server that exposes all of Twilio APIs.
