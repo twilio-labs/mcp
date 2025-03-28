@@ -282,11 +282,9 @@ async function configureClient(executableArgs: string[]) {
 export default async function config() {
   let currentCredentials = await auth.getCredentials();
   let shouldOverwrite = false;
-  
+
   if (currentCredentials) {
-    shouldOverwrite = await promptForOverwrite(
-      currentCredentials.accountSid,
-    );
+    shouldOverwrite = await promptForOverwrite(currentCredentials.accountSid);
   }
 
   if (currentCredentials && !shouldOverwrite) {
