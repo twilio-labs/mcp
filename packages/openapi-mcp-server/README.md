@@ -1,7 +1,13 @@
-<p align="center"><img src="docs/twilioAlphaLogoLight.png#gh-dark-mode-only" height="70" alt="Twilio Alpha"/><img src="docs/twilioAlphaLogoDark.png#gh-light-mode-only" height="70" alt="Twilio Alpha"/></p>
-<h1 align="center">Twilio MCP Utils</h1>
+<p align="center"><img src="https://github.com/twilio-labs/mcp/blob/246f1b1cd1854d1343468af07a2dfa179dc30a16/docs/twilioAlphaLogoLight.png#gh-dark-mode-only" height="70" alt="Twilio Alpha"/><img src="https://github.com/twilio-labs/mcp/blob/246f1b1cd1854d1343468af07a2dfa179dc30a16/docs/twilioAlphaLogoDark.png#gh-light-mode-only" height="70" alt="Twilio Alpha"/></p>
+<h1 align="center">Twilio MCP Monorepo</h1>
 
 This is a Proof of Concept (PoC) project by the ETI team, exploring the use of [Model Context Protocol](https://modelcontextprotocol.io/) (MCP) for the exchange of model context information between different tools.
+
+## Prerequisites
+
+- Node.js 18 or higher
+- npm 9 or higher
+- A Twilio account with API credentials
 
 ## Getting Started
 
@@ -14,7 +20,7 @@ The easiest way to get started is to edit the configuration of your client to po
       "command": "npx",
       "args": [
         "-y",
-        "@twilio-alpha/mcp-server",
+        "@twilio-alpha/openapi-mcp-server",
         "--apiPath",
         "<PATH_TO_OPEN_API_YAML_DIR>",
         "--username",
@@ -43,9 +49,16 @@ The name of the services you want to use - this corresponds to the individual fi
 
 The tag name as defined in each of the individual endpoints. If you want to filter by `tags` only, make sure you pass `--services ''` as an empty object.
 
-## Extending Server
+## Custom Server
 
-If you require more control over the server, you can extend `OpenAPIMCPServer`:
+First, install the package in your repo:
+
+```bash
+# Clone the repository
+npm install @twilio-alpha/openapi-mcp-server --save
+```
+
+Then you can extend `OpenAPIMCPServer`:
 
 ```ts
 class CustomOpenAPIServer extends OpenAPIMCPServer {
@@ -81,22 +94,3 @@ This method can be used to modify the body of the request before an API call is 
 ### callToolResponse(httpResponse: HttpResponse<T>, response: CallToolResponse,) => CallToolResponse
 
 This method can be used to modify the response of the API call before it is sent back to the client.
-
-## Playing With Source Code
-
-If you prefer to play around with the server, you can clone the repository and run the server locally. Once you've installed the server, `npm run build` and update your client's configuration to use
-
-```json
-{
-  "mcpServers": {
-    "openapi-server": {
-      "command": "node",
-      "args": [
-        "PATH_TO_BUILD_SIMPLE.JS",
-        "--apiPath",
-        "PATH_TO_OPEN_API_YAML_SPEC"
-      ]
-    }
-  }
-}
-```
