@@ -1,7 +1,13 @@
-<p align="center"><img src="docs/twilioAlphaLogoLight.png#gh-dark-mode-only" height="70" alt="Twilio Alpha"/><img src="docs/twilioAlphaLogoDark.png#gh-light-mode-only" height="70" alt="Twilio Alpha"/></p>
-<h1 align="center">Twilio MCP</h1>
+<p align="center"><img src="https://github.com/twilio-labs/mcp/blob/246f1b1cd1854d1343468af07a2dfa179dc30a16/docs/twilioAlphaLogoLight.png?raw=true#gh-dark-mode-only" height="70" alt="Twilio Alpha"/><img src="https://github.com/twilio-labs/mcp/blob/246f1b1cd1854d1343468af07a2dfa179dc30a16/docs/twilioAlphaLogoDark.png?raw=true#gh-light-mode-only" height="70" alt="Twilio Alpha"/></p>
+<h1 align="center">Twilio MCP Monorepo</h1>
 
 This is a Proof of Concept (PoC) project by the ETI team, exploring the use of [Model Context Protocol](https://modelcontextprotocol.io/) (MCP) for the exchange of model context information between different tools.
+
+## Prerequisites
+
+- Node.js 18 or higher
+- npm 9 or higher
+- A Twilio account with API credentials
 
 ## Getting Started
 
@@ -209,3 +215,17 @@ The following tags can be used with the `--tags` parameter to select specific AP
 - `TaskrouterV1WorkspaceStatistics` - Workspace Statistics
 
 This list includes the most commonly used tags. Each service has its own set of tags that follow the pattern `{ServiceName}{Version}{Resource}`. You can combine multiple tags by separating them with commas in your configuration.
+
+## Local Development
+
+```bash
+# Clone the repository
+git clone https://github.com/twilio/mcp.git
+cd mcp
+
+# Install dependencies
+npm install
+
+# Build the packages
+npm run build
+```
