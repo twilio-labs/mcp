@@ -1,4 +1,4 @@
-<p align="center"><img src="docs/twilioAlphaLogo.png" height="70" alt="Twilio Alpha"/></p>
+<p align="center"><img src="https://github.com/twilio-labs/mcp/blob/246f1b1cd1854d1343468af07a2dfa179dc30a16/docs/twilioAlphaLogoLight.png?raw=true#gh-dark-mode-only" height="70" alt="Twilio Alpha"/><img src="https://github.com/twilio-labs/mcp/blob/246f1b1cd1854d1343468af07a2dfa179dc30a16/docs/twilioAlphaLogoDark.png?raw=true#gh-light-mode-only" height="70" alt="Twilio Alpha"/></p>
 <h1 align="center">Twilio MCP Monorepo</h1>
 
 This is a monorepo for the Model Context Protocol server that exposes all of Twilio APIs.
@@ -6,26 +6,6 @@ This is a monorepo for the Model Context Protocol server that exposes all of Twi
 ## What is MCP?
 
 The Model Context Protocol (MCP) is a protocol for exchanging model context information between AI tools and services. This implementation allows you to expose Twilio's APIs to AI assistants and other tools that support the MCP protocol.
-
-## Prerequisites
-
-- Node.js 18 or higher
-- npm 9 or higher
-- A Twilio account with API credentials
-
-## Installation
-
-```bash
-# Clone the repository
-git clone https://github.com/twilio/mcp.git
-cd mcp
-
-# Install dependencies
-npm install
-
-# Build the packages
-npm run build
-```
 
 ## Packages
 

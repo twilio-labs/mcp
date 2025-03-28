@@ -1,7 +1,13 @@
-<p align="center"><img src="docs/twilioAlphaLogo.png" height="70" alt="Twilio Alpha"/></p>
-<h1 align="center">Twilio MCP</h1>
+<p align="center"><img src="https://github.com/twilio-labs/mcp/blob/246f1b1cd1854d1343468af07a2dfa179dc30a16/docs/twilioAlphaLogoLight.png?raw=true#gh-dark-mode-only" height="70" alt="Twilio Alpha"/><img src="https://github.com/twilio-labs/mcp/blob/246f1b1cd1854d1343468af07a2dfa179dc30a16/docs/twilioAlphaLogoDark.png?raw=true#gh-light-mode-only" height="70" alt="Twilio Alpha"/></p>
+<h1 align="center">Twilio MCP Server</h1>
 
 This is a Proof of Concept (PoC) project by the ETI team, exploring the use of [Model Context Protocol](https://modelcontextprotocol.io/) (MCP) for the exchange of model context information between different tools.
+
+## Prerequisites
+
+- Node.js 18 or higher
+- npm 9 or higher
+- A Twilio account with API credentials
 
 ## Getting Started
 
@@ -13,7 +19,7 @@ The easiest way to get started is to edit the configuration of your client to po
     "twilio": {
       "command": "npx",
       "args": [
-        "-y", 
+        "-y",
         "@twilio-alpha/mcp",
         "YOUR_ACCOUNT_SID/YOUR_API_KEY:YOUR_API_SECRET"
       ]
@@ -30,9 +36,9 @@ Visit [Twilio API Keys docs](https://www.twilio.com/docs/iam/api-keys) for infor
 
 You can pass the following optional parameters to the `mcp` server:
 
-**--services (optional)** 
+**--services (optional)**
 
-The name of the services you want to use - this corresponds to the filename https://github.com/twilio/twilio-oai/tree/main/spec/yaml without the `twilio_` prefix - for example `chat_v3` for `twilio_chat_v3`.
+The name of the services you want to use - this corresponds to the filename https://github.com/twilio/twilio-oai/tree/main/spec/yaml
 
 **--tags (optional)**
 
@@ -40,7 +46,7 @@ The tag name as defined in each of the individual endpoints. If you want to filt
 
 ## Loading Separate APIs
 
-Due to the context size limitation of LLMs and the vast number of APIs available, you need to load separate APIs by passing the `--services/--tags` parameter. For example, to load the `chat_v3` API, you can pass `--services chat_v3`. If you need particular APIs from separate service files, you can use the `--tags` to individually select the endpoints. 
+Due to the context size limitation of LLMs and the vast number of APIs available, you need to load separate APIs by passing the `--services/--tags` parameter. For example, to load the `chat_v3` API, you can pass `--services chat_v3`. If you need particular APIs from separate service files, you can use the `--tags` to individually select the endpoints.
 
 ### Examples: Serverless Tools
 
@@ -52,11 +58,11 @@ Load all the Serverless API tools.
     "twilio": {
       "command": "npx",
       "args": [
-        "-y", 
+        "-y",
         "@twilio-alpha/mcp",
         "YOUR_ACCOUNT_SID/YOUR_API_KEY:YOUR_API_SECRET",
         "--services",
-        "serverless_v1"
+        "twilio_serverless_v1"
       ]
     }
   }
@@ -73,7 +79,7 @@ Load the Incoming Phone Number and the Studio Flows API tools.
     "twilio": {
       "command": "npx",
       "args": [
-        "-y", 
+        "-y",
         "@twilio-alpha/mcp",
         "YOUR_ACCOUNT_SID/YOUR_API_KEY:YOUR_API_SECRET",
         "--tags",
@@ -211,3 +217,17 @@ The following tags can be used with the `--tags` parameter to select specific AP
 - `TaskrouterV1WorkspaceStatistics` - Workspace Statistics
 
 This list includes the most commonly used tags. Each service has its own set of tags that follow the pattern `{ServiceName}{Version}{Resource}`. You can combine multiple tags by separating them with commas in your configuration.
+
+## Local Development
+
+```bash
+# Clone the repository
+git clone https://github.com/twilio/mcp.git
+cd mcp
+
+# Install dependencies
+npm install
+
+# Build the packages
+npm run build
+```
