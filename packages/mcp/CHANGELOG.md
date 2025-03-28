@@ -1,5 +1,13 @@
 # @twilio-alpha/mcp
 
+## 0.1.2
+
+### Patch Changes
+
+- Update readme
+- Updated dependencies
+  - @twilio-alpha/openapi-mcp-server@0.1.2
+
 ## 0.1.1
 
 ### Patch Changes
