@@ -1,7 +1,15 @@
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import {
+  CallToolRequest,
   CallToolRequestSchema,
+  CallToolResult,
+  ListResourcesRequestSchema,
   ListToolsRequestSchema,
+  ReadResourceRequest,
+  ReadResourceRequestSchema,
+  ReadResourceResult,
+  Resource,
+  ServerCapabilities,
   Tool,
 } from '@modelcontextprotocol/sdk/types.js';
 
@@ -21,38 +29,38 @@ export type Configuration = {
   server: {
     name: string;
     version: string;
+    capabilities?: ServerCapabilities;
   };
   openAPIDir: string;
   filters?: ToolFilters;
   authorization?: Authorization;
 };
 
-type CallToolResponse = {
-  content: {
-    type: 'text';
-    text: string;
-  }[];
-};
-
 export default class OpenAPIMCPServer {
   public readonly server: Server;
+
+  protected capabilities: ServerCapabilities;
+
+  protected resources: Resource[] = [];
 
   protected tools: Map<string, Tool> = new Map();
 
   protected apis: Map<string, API> = new Map();
 
-  private http: Http;
-
-  private readonly configuration: Configuration;
+  protected readonly configuration: Configuration;
 
   protected readonly logger;
 
+  private http: Http;
+
   constructor(config: Configuration) {
     this.configuration = config;
+    this.capabilities = {
+      tools: {},
+      ...config.server.capabilities,
+    };
     this.server = new Server(config.server, {
-      capabilities: {
-        tools: {},
-      },
+      capabilities: this.capabilities,
     });
     this.logger = logger.child({ module: config.server.name });
     this.http = new Http({
@@ -61,7 +69,7 @@ export default class OpenAPIMCPServer {
   }
 
   public async start(transport: any) {
-    await this.loadTools();
+    await this.load();
     this.setupHandlers();
     await this.server.connect(transport);
   }
@@ -114,9 +122,49 @@ export default class OpenAPIMCPServer {
   // eslint-disable-next-line class-methods-use-this
   protected callToolResponse<T>(
     httpResponse: HttpResponse<T>,
-    response: CallToolResponse,
-  ): CallToolResponse {
+    response: CallToolResult,
+  ): CallToolResult {
     return response;
+  }
+
+  /**
+   * Custom hook for extending capabilities
+   */
+  protected async loadCapabilities() {
+    /* no--op */
+  }
+
+  /**
+   * Handles the read resource request
+   * @param request the request to handle
+   */
+  protected async handleReadResource(
+    request: ReadResourceRequest,
+  ): Promise<ReadResourceResult> {
+    this.ensureCapability('resources');
+
+    throw new Error(
+      'handleReadResource method must be implemented to handle resource reading',
+    );
+  }
+
+  /**
+   * Ensure that the server has the specified capability
+   * @param capability
+   */
+  protected ensureCapability(capability: keyof typeof this.capabilities) {
+    if (!this.hasCapability(capability)) {
+      throw new Error(`${capability} not supported`);
+    }
+  }
+
+  /**
+   * Check if the server has the specified capability
+   * @param capability
+   * @returns
+   */
+  protected hasCapability(capability: keyof typeof this.capabilities): boolean {
+    return capability in this.capabilities;
   }
 
   /**
@@ -124,56 +172,90 @@ export default class OpenAPIMCPServer {
    * @private
    */
   private setupHandlers(): void {
+    if (this.hasCapability('resources')) {
+      /**
+       * List resources
+       */
+      this.server.setRequestHandler(ListResourcesRequestSchema, async () => {
+        return {
+          resources: this.resources,
+        };
+      });
+
+      this.server.setRequestHandler(
+        ReadResourceRequestSchema,
+        this.handleReadResource.bind(this),
+      );
+    }
+
+    /**
+     * List tools
+     */
     this.server.setRequestHandler(ListToolsRequestSchema, async () => {
       return {
         tools: Array.from(this.tools.values()),
       };
     });
 
-    this.server.setRequestHandler(CallToolRequestSchema, async (request) => {
-      const { name } = request.params;
-      const id: string = name.split('---')[1]?.trim();
-      const tool = this.tools.get(id);
-      const api = this.apis.get(id);
-      if (!tool || !api) {
-        throw new Error(`Tool (${id}) not found: ${name}`);
-      }
-      const rawBody =
-        (request.params.arguments as Record<string, unknown>) ?? {};
-      const body = this.callToolBody(tool, api, rawBody);
+    /**
+     * Call tool
+     */
+    this.server.setRequestHandler(
+      CallToolRequestSchema,
+      this.handleCallTool.bind(this),
+    );
+  }
 
-      const httpResponse = await this.makeRequest(api, body);
-      if (!httpResponse.ok) {
-        this.logger.error({
-          message: 'failed to make request',
-          api,
-          tool,
-          httpResponse,
-        });
-        throw new Error(httpResponse.error.message);
-      }
-      const response: CallToolResponse = {
-        content: [
-          {
-            type: 'text',
-            text: JSON.stringify(httpResponse.data, null, 2),
-          },
-        ],
-      };
+  /**
+   * Handles the Call Tool
+   * @param request
+   * @returns
+   */
+  private async handleCallTool(request: CallToolRequest) {
+    const { name } = request.params;
+    const id: string = name.split('---')[1]?.trim();
+    const tool = this.tools.get(id);
+    const api = this.apis.get(id);
+    if (!tool || !api) {
+      throw new Error(`Tool (${id}) not found: ${name}`);
+    }
+    const rawBody = request.params.arguments ?? {};
+    const body = this.callToolBody(tool, api, rawBody);
 
-      return this.callToolResponse(httpResponse, response);
-    });
+    const httpResponse = await this.makeRequest(api, body);
+    if (!httpResponse.ok) {
+      this.logger.error({
+        message: 'failed to make request',
+        api,
+        tool,
+        httpResponse,
+      });
+      throw new Error(httpResponse.error.message);
+    }
+    const response: CallToolResult = {
+      content: [
+        {
+          type: 'text',
+          text: JSON.stringify(httpResponse.data, null, 2),
+        },
+      ],
+    };
+
+    return this.callToolResponse(httpResponse, response);
   }
 
   /**
    * Load tools from the OpenAPI specs
    * @private
    */
-  private async loadTools() {
+  private async load() {
     const apiDir = this.configuration.openAPIDir;
     const specs = await readSpecs(apiDir, apiDir);
     const { tools, apis } = loadTools(specs, this.configuration.filters);
     this.tools = tools;
     this.apis = apis;
+
+    // Load additional capabilities
+    await this.loadCapabilities();
   }
 }

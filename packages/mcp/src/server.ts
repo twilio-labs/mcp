@@ -1,7 +1,12 @@
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 
-import { Tool } from '@modelcontextprotocol/sdk/types.js';
+import {
+  ReadResourceRequest,
+  ReadResourceResult,
+  Resource,
+  Tool,
+} from '@modelcontextprotocol/sdk/types.js';
 import {
   API,
   OpenAPIMCPServer,
@@ -28,7 +33,14 @@ export default class TwilioOpenAPIMCPServer extends OpenAPIMCPServer {
 
   constructor(config: Configuration) {
     super({
-      server: config.server,
+      server: {
+        name: config.server.name,
+        version: config.server.version,
+        capabilities: {
+          resources: {},
+          tools: {},
+        },
+      },
       openAPIDir: join(ROOT_DIR, 'twilio-oai', 'spec', 'yaml'),
       filters: config.filters,
       authorization: {
@@ -56,5 +68,42 @@ export default class TwilioOpenAPIMCPServer extends OpenAPIMCPServer {
     }
 
     return body;
+  }
+
+  /**
+   * Handles read resource requests
+   * @param request
+   * @returns
+   */
+  protected async handleReadResource(
+    request: ReadResourceRequest,
+  ): Promise<ReadResourceResult> {
+    const { uri, name } = request.params;
+    if (uri === 'text://accountSid') {
+      return {
+        contents: [
+          {
+            uri,
+            name,
+            mimeType: 'text/plain',
+            text: `The Twilio accountSid is ${this.config.accountSid}`,
+          },
+        ],
+      };
+    }
+
+    throw new Error(`Resource ${name} not found`);
+  }
+
+  /**
+   * Loads resources for the server
+   * @returns
+   */
+  protected async loadCapabilities(): Promise<void> {
+    this.resources.push({
+      uri: 'text://accountSid',
+      name: 'Twilio AccountSid',
+      description: 'The account SID for the Twilio account',
+    });
   }
 }
