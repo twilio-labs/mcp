@@ -3,8 +3,13 @@ import {
   CallToolRequest,
   CallToolRequestSchema,
   CallToolResult,
+  GetPromptRequest,
+  GetPromptRequestSchema,
+  GetPromptResult,
+  ListPromptsRequestSchema,
   ListResourcesRequestSchema,
   ListToolsRequestSchema,
+  Prompt,
   ReadResourceRequest,
   ReadResourceRequestSchema,
   ReadResourceResult,
@@ -25,11 +30,12 @@ import {
 } from '@app/utils';
 import { HttpResponse } from '@app/utils/http';
 
-export type Configuration = {
+export type OpenAPIMCPServerConfiguration = {
   server: {
     name: string;
     version: string;
     capabilities?: ServerCapabilities;
+    instructions?: string;
   };
   openAPIDir: string;
   filters?: ToolFilters;
@@ -41,19 +47,21 @@ export default class OpenAPIMCPServer {
 
   protected capabilities: ServerCapabilities;
 
+  protected prompts: Map<string, Prompt> = new Map();
+
   protected resources: Resource[] = [];
 
   protected tools: Map<string, Tool> = new Map();
 
   protected apis: Map<string, API> = new Map();
 
-  protected readonly configuration: Configuration;
+  protected readonly configuration: OpenAPIMCPServerConfiguration;
 
   protected readonly logger;
 
   private http: Http;
 
-  constructor(config: Configuration) {
+  constructor(config: OpenAPIMCPServerConfiguration) {
     this.configuration = config;
     this.capabilities = {
       tools: {},
@@ -61,6 +69,7 @@ export default class OpenAPIMCPServer {
     };
     this.server = new Server(config.server, {
       capabilities: this.capabilities,
+      instructions: config.server.instructions,
     });
     this.logger = logger.child({ module: config.server.name });
     this.http = new Http({
@@ -130,6 +139,7 @@ export default class OpenAPIMCPServer {
   /**
    * Custom hook for extending capabilities
    */
+  // eslint-disable-next-line class-methods-use-this
   protected async loadCapabilities() {
     /* no--op */
   }
@@ -139,12 +149,28 @@ export default class OpenAPIMCPServer {
    * @param request the request to handle
    */
   protected async handleReadResource(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     request: ReadResourceRequest,
   ): Promise<ReadResourceResult> {
     this.ensureCapability('resources');
 
     throw new Error(
-      'handleReadResource method must be implemented to handle resource reading',
+      'handleReadResource method must be implemented to handle resources reading',
+    );
+  }
+
+  /**
+   * Handles the get prompt request
+   * @param request the request to handle
+   */
+  protected async handleGetPrompt(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    request: GetPromptRequest,
+  ): Promise<GetPromptResult> {
+    this.ensureCapability('prompts');
+
+    throw new Error(
+      'handleGetPrompt method must be implemented to handle prompts reading',
     );
   }
 
@@ -172,10 +198,8 @@ export default class OpenAPIMCPServer {
    * @private
    */
   private setupHandlers(): void {
+    // Resource capability
     if (this.hasCapability('resources')) {
-      /**
-       * List resources
-       */
       this.server.setRequestHandler(ListResourcesRequestSchema, async () => {
         return {
           resources: this.resources,
@@ -185,6 +209,20 @@ export default class OpenAPIMCPServer {
       this.server.setRequestHandler(
         ReadResourceRequestSchema,
         this.handleReadResource.bind(this),
+      );
+    }
+
+    // Prompt capability
+    if (this.hasCapability('prompts')) {
+      this.server.setRequestHandler(ListPromptsRequestSchema, async () => {
+        return {
+          prompts: Array.from(this.prompts.values()),
+        };
+      });
+
+      this.server.setRequestHandler(
+        GetPromptRequestSchema,
+        this.handleGetPrompt.bind(this),
       );
     }
 

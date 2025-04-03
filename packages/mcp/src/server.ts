@@ -4,7 +4,6 @@ import { fileURLToPath } from 'url';
 import {
   ReadResourceRequest,
   ReadResourceResult,
-  Resource,
   Tool,
 } from '@modelcontextprotocol/sdk/types.js';
 import {
@@ -39,7 +38,9 @@ export default class TwilioOpenAPIMCPServer extends OpenAPIMCPServer {
         capabilities: {
           resources: {},
           tools: {},
+          prompts: {},
         },
+        instructions: TwilioOpenAPIMCPServer.systemPrompt(config.accountSid),
       },
       openAPIDir: join(ROOT_DIR, 'twilio-oai', 'spec', 'yaml'),
       filters: config.filters,
@@ -50,6 +51,15 @@ export default class TwilioOpenAPIMCPServer extends OpenAPIMCPServer {
       },
     });
     this.config = config;
+  }
+
+  /**
+   * Sets the system prompt for the server
+   * @param accountSid
+   * @returns
+   */
+  private static systemPrompt(accountSid: string): string {
+    return `You are an agent to call Twilio APIs. If no accountSid is provided, you MUST use ${accountSid}`;
   }
 
   /**

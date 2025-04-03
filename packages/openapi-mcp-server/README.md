@@ -61,8 +61,13 @@ npm install @twilio-alpha/openapi-mcp-server --save
 Then you can extend `OpenAPIMCPServer`:
 
 ```ts
+import {
+  OpenAPIMCPServer,
+  OpenAPIMCPServerConfiguration,
+} from '@twilio-alpha/openapi-mcp-server';
+
 class CustomOpenAPIServer extends OpenAPIMCPServer {
-  constructor(config: ExtendedConfiguration) {
+  constructor(config: OpenAPIMCPServerConfiguration) {
     super({
       // these are required
       server: config.server,
@@ -87,6 +92,56 @@ await server.start(transport);
 logger.info('MCP Server running on stdio');
 ```
 
+
+### loadCapabilities() => Promise<void>
+
+Use this method to load/modify any additional capabilities, such as making change to the default tools or adding resources.
+
+_Note_: To enable resources, include
+
+```json
+const configuration = {
+  server: {
+    name: config.server.name,
+    version: config.server.version,
+    capabilities: {
+      resources: {},
+      tools: {},
+    },
+  }
+}
+```
+
+#### Example
+
+```ts
+/**
+ * Loads resources for the server
+ * @returns
+ */
+protected async loadCapabilities(): Promise<void> {
+  this.resources.push({
+    uri: 'text://accountSid',
+    name: 'Twilio AccountSid',
+    description: 'The account SID for the Twilio account',
+  });
+
+  this.prompts.set('userSid', {
+    name: 'Twilio UserSid',
+    description: 'The UserSid for the Twilio account',
+    arguments: [
+      {
+        name: 'userSid'
+        description: 'The UserSid for the Twilio account',
+        required: true,
+      },
+    ],
+  });
+
+  // Modify anything else here
+}
+```
+
 ### callToolBody(tool: Tool, api: API, body: Record<string, unknown>) => Record<string, unknown>
 
 This method can be used to modify the body of the request before an API call is made.
@@ -94,3 +149,69 @@ This method can be used to modify the body of the request before an API call is 
 ### callToolResponse(httpResponse: HttpResponse<T>, response: CallToolResponse,) => CallToolResponse
 
 This method can be used to modify the response of the API call before it is sent back to the client.
+
+###  handleReadResource(request: ReadResourceRequest) => Promise<ReadResourceResult>
+
+Use this method to handle Resource loading.
+
+#### Example
+
+```ts
+/**
+ * Handles read resource requests
+ * @param request
+ * @returns
+ */
+protected async handleReadResource(
+  request: ReadResourceRequest,
+): Promise<ReadResourceResult> {
+  const { uri, name } = request.params;
+  if (uri === 'text://accountSid') {
+    return {
+      contents: [
+        {
+          uri,
+          name,
+          mimeType: 'text/plain',
+          text: `The Twilio accountSid is ${this.config.accountSid}`,
+        },
+      ],
+    };
+  }
+
+  throw new Error(`Resource ${name} not found`);
+}
+```
+
+For more information see [resources#example-implementation](https://modelcontextprotocol.io/docs/concepts/resources#example-implementation)
+
+### protected async handleGetPrompt(request: GetPromptRequest) => Promise<GetPromptResult>
+
+```ts
+/**
+ * Handles the get prompt request
+ * @param request the request to handle
+ */
+protected async handleGetPrompt(
+  request: GetPromptRequest,
+): Promise<GetPromptResult> {
+  const { name, arguments } = request.params;
+  if (name === 'twilio-userSid') {
+    return {
+      messages: [
+        {
+          role: 'user',
+          content: {
+            type: 'text',
+            text: `The Twilio UserSid is ${arguments.userSid}`,
+          },
+        },
+      ],
+    };
+  }
+
+  throw new Error(`Prompt ${name} not found`);
+}
+```
+
+For more information see [prompts#example-implementation](https://modelcontextprotocol.io/docs/concepts/prompts#example-implementation)
