@@ -207,6 +207,7 @@ describe('TwilioOpenAPIMCPServer', () => {
     it('should add accountSid resource to resources list', async () => {
       // Mock resources array
       server.resources = [];
+      server.tools = new Map();
 
       // Call method
       await server.loadCapabilities();
@@ -217,8 +218,53 @@ describe('TwilioOpenAPIMCPServer', () => {
           uri: 'text://accountSid',
           name: 'Twilio AccountSid',
           description: 'The account SID for the Twilio account',
+          mimeType: 'text/plain',
         },
       ]);
     });
+  });
+
+  it('should add accountSid resource and enhance tool descriptions with AccountSid', async () => {
+    server.resources = [];
+    const mockTool1 = {
+      id: 'tool1',
+      description: 'Original description for tool1',
+      inputSchema: {
+        properties: {
+          AccountSid: {
+            type: 'string',
+          },
+        },
+      },
+    };
+
+    const mockTool2 = {
+      id: 'tool2',
+      description: 'Tool without AccountSid requirement',
+      inputSchema: {
+        properties: {
+          OtherParam: {
+            type: 'string',
+          },
+        },
+      },
+    };
+
+    server.tools = new Map([
+      ['tool1', mockTool1],
+      ['tool2', mockTool2],
+    ]);
+
+    await server.loadCapabilities();
+
+    const updatedTool1 = server.tools.get('tool1');
+    const updatedTool2 = server.tools.get('tool2');
+
+    expect(updatedTool1.description).toBe(
+      `Original description for tool1 (Uses default AccountSid: ${mockConfig.accountSid} if not provided)`,
+    );
+    expect(updatedTool2.description).toBe(
+      'Tool without AccountSid requirement',
+    );
   });
 });
