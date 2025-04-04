@@ -114,6 +114,20 @@ export default class TwilioOpenAPIMCPServer extends OpenAPIMCPServer {
       uri: 'text://accountSid',
       name: 'Twilio AccountSid',
       description: 'The account SID for the Twilio account',
+      mimeType: 'text/plain',
     });
+
+    for (const [id, tool] of this.tools) {
+      if (tool.inputSchema?.properties?.AccountSid) {
+        const originalDescription = tool.description;
+        const enhancedDescription = `${originalDescription} (Uses default AccountSid: ${this.config.accountSid} if not provided)`;
+        const updatedTool = {
+          ...tool,
+          description: enhancedDescription,
+        };
+
+        this.tools.set(id, updatedTool);
+      }
+    }
   }
 }
