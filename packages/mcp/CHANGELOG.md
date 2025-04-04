@@ -1,5 +1,16 @@
 # @twilio-alpha/mcp
 
+## 0.2.0
+
+### Minor Changes
+
+- Expose Resources and Prompts - auto populate AccountSid
+
+### Patch Changes
+
+- Updated dependencies
+  - @twilio-alpha/openapi-mcp-server@0.2.0
+
 ## 0.1.2
 
 ### Patch Changes
