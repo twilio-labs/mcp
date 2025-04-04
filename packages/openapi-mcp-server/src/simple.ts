@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 
-import { Configuration, logger, OpenAPIMCPServer } from '.';
+import { logger, OpenAPIMCPServer, OpenAPIMCPServerConfiguration } from '.';
 import parsedArgs from './utils/args';
 
 const args = await parsedArgs(process.argv);
-const config: Configuration = {
+const config: OpenAPIMCPServerConfiguration = {
   server: {
     name: 'openapi-mcp-server',
     version: '0.0.1',

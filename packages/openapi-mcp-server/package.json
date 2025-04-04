@@ -21,8 +21,8 @@
   "scripts": {
     "prebuild": "rm -rf build/",
     "build": "tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json && node -e \"require('fs').chmodSync('build/simple.js', '755')\"",
-    "lint": "eslint src/ --ext .ts",
-    "lint:fix": "eslint src/ --ext .ts --fix",
+    "lint": "eslint src/ tests/ --ext .ts",
+    "lint:fix": "eslint src/ tests/ --ext .ts --fix",
     "prepare": "# no-op",
     "start": "node build",
     "test": "vitest run",

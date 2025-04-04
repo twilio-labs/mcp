@@ -1,6 +1,5 @@
-import { nanoid } from 'nanoid';
 import { OpenAPIV3 } from 'openapi-types';
-import { describe, expect, it, Mock, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import { HttpMethod } from '@app/types';
 import { OpenAPISpec } from '@app/utils';
