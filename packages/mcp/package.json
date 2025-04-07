@@ -9,7 +9,7 @@
     "twilio",
     "twilio api"
   ],
-  "license": "ISC",
+  "license": "MIT",
   "author": "Twilio",
   "type": "module",
   "main": "build/index.js",
@@ -29,13 +29,13 @@
     "prepare": "[ -d twilio-oai ] && (cd twilio-oai && git pull) || git clone https://github.com/twilio/twilio-oai",
     "start": "node build",
     "test": "vitest run",
-    "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest"
   },
   "dependencies": {
-    "@twilio-alpha/openapi-mcp-server": "0.1.2",
     "@apidevtools/swagger-parser": "^10.1.1",
     "@modelcontextprotocol/sdk": "^1.7.0",
+    "@twilio-alpha/openapi-mcp-server": "0.1.2",
     "inquirer": "^12.5.0",
     "keytar": "^7.9.0",
     "minimist": "^1.2.8",
@@ -58,6 +58,10 @@
     "tsx": "^4.19.3",
     "typescript": "^5",
     "vitest": "^3.0.9"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=11.2.0"
   },
   "publishConfig": {
     "access": "public"
