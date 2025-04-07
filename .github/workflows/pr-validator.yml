@@ -12,6 +12,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libsecret-1-dev
     - uses: actions/setup-node@v4
       with:
         node-version: 20
