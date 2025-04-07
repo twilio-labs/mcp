@@ -99,7 +99,7 @@ Use this method to load/modify any additional capabilities, such as making chang
 
 _Note_: To enable resources, include
 
-```json
+```js
 const configuration = {
   server: {
     name: config.server.name,
