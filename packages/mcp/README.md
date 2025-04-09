@@ -30,6 +30,10 @@ The easiest way to get started is to edit the configuration of your client to po
 
 Visit [Twilio API Keys docs](https://www.twilio.com/docs/iam/api-keys) for information on how to find/create your apiKey/apiSecret.
 
+## Security Recommendations
+
+In order to guard against injection attacks, the ETI team recommends that users of Twilio MCP servers do not install or run any community MCP servers alongside ours. Please only use official, trusted MCP servers in order to limit access to Tools that interact with your Twilio account.
+
 ## Configuration Parameters
 
 You can pass the following optional parameters to the `mcp` server:
