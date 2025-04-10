@@ -29,7 +29,7 @@ The easiest way to get started is by using npx:
     "twilio": {
       "command": "npx",
       "args": [
-        "-y", 
+        "-y",
         "@twilio-alpha/mcp",
         "YOUR_ACCOUNT_SID/YOUR_API_KEY:YOUR_API_SECRET"
       ]
@@ -39,6 +39,10 @@ The easiest way to get started is by using npx:
 ```
 
 Visit [Twilio API Keys docs](https://www.twilio.com/docs/iam/api-keys) for information on how to find/create your API Key and Secret.
+
+## Security Recommendations
+
+To guard against injection attacks that may allow untrusted systems access to your Twilio data, the ETI team advises users of Twilio MCP servers to avoid installing or running any community MCP servers alongside our official ones. Doing so helps ensure that only trusted MCP servers have access to tools interacting with your Twilio account, reducing the risk of unauthorized data access.
 
 ## Basic Configuration Options
 
