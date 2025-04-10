@@ -42,7 +42,7 @@ Visit [Twilio API Keys docs](https://www.twilio.com/docs/iam/api-keys) for infor
 
 ## Security Recommendations
 
-In order to guard against injection attacks, the ETI team recommends that users of Twilio MCP servers do not install or run any community MCP servers alongside ours. Please only use official, trusted MCP servers in order to limit access to Tools that interact with your Twilio account.
+To guard against injection attacks that may allow untrusted systems access to your Twilio data, the ETI team advises users of Twilio MCP servers to avoid installing or running any community MCP servers alongside our official ones. Doing so helps ensure that only trusted MCP servers have access to tools interacting with your Twilio account, reducing the risk of unauthorized data access.
 
 ## Basic Configuration Options
 
