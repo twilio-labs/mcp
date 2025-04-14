@@ -49,6 +49,7 @@ const parsedArgs = async (argv: string[]): Promise<ParsedArgs> => {
     firstArg.includes('/')
   ) {
     const credsMatch = firstArg.match(/^([^/]+)\/([^:]+):(.+)$/);
+
     if (credsMatch) {
       const potentialAccountSid = credsMatch[1];
       const potentialApiKey = credsMatch[2];
@@ -65,11 +66,12 @@ const parsedArgs = async (argv: string[]): Promise<ParsedArgs> => {
     }
   }
 
-  if (!isValidTwilioSid(accountSid, 'AC')) {
+  if (accountSid && !isValidTwilioSid(accountSid, 'AC')) {
     logger.error('Error: Invalid AccountSid');
     process.exit(1);
   }
-  if (!isValidTwilioSid(apiKey, 'SK')) {
+
+  if (apiKey && !isValidTwilioSid(apiKey, 'SK')) {
     logger.error('Error: Invalid ApiKey');
     process.exit(1);
   }

@@ -9,6 +9,9 @@
     "packages/openapi-mcp-server",
     "packages/mcp"
   ],
+  "bin": {
+    "twilio-mcp-server": "./packages/mcp/build/index.js"
+  },
   "scripts": {
     "verify": "run-p build lint test",
     "build": "npm run build --workspaces",
