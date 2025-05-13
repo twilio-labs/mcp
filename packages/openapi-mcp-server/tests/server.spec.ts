@@ -58,10 +58,10 @@ describe('OpenAPIMCPServer', () => {
       openAPIDir: '/mock/path',
     };
 
-    mockToolId = 'mock-tool-id';
+    mockToolId = 'mockService--mockOperationId';
     mockTool = {
       id: mockToolId,
-      name: `mockTool---${mockToolId}`,
+      name: mockToolId,
       description: 'Mock tool description',
       inputSchema: {
         type: 'object',
@@ -405,7 +405,7 @@ describe('OpenAPIMCPServer', () => {
 
     const result = await customServer.testHandleCallTool({
       params: {
-        name: `mockTool---${mockToolId}`,
+        name: mockToolId,
         arguments: { param1: 'value1' },
       },
     });
@@ -441,11 +441,11 @@ describe('OpenAPIMCPServer', () => {
     await expect(
       customServer.testHandleCallTool({
         params: {
-          name: 'nonExistentTool---unknown',
+          name: 'nonExistentTool--unknown',
           arguments: {},
         },
       }),
-    ).rejects.toThrow('Tool (unknown) not found');
+    ).rejects.toThrow('Tool (nonExistentTool--unknown) not found: unknown');
   });
 
   it('should throw error when API call fails', async () => {
@@ -472,7 +472,7 @@ describe('OpenAPIMCPServer', () => {
     await expect(
       customServer.testHandleCallTool({
         params: {
-          name: `mockTool---${mockToolId}`,
+          name: mockToolId,
           arguments: {},
         },
       }),

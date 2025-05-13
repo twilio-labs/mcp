@@ -1,5 +1,4 @@
 import { Tool as MCPTool } from '@modelcontextprotocol/sdk/types.js';
-import { nanoid } from 'nanoid';
 import { OpenAPIV3 } from 'openapi-types';
 
 import { API, HttpMethod } from '@app/types';
@@ -82,8 +81,7 @@ export default function loadTools(specs: OpenAPISpec[], filters?: ToolFilters) {
           .forEach(([method, op]) => {
             const operation = op as OpenAPIV3.OperationObject;
 
-            const id = nanoid(8);
-            const name = `${operation.operationId}---${id}`;
+            const name = `${spec.name}--${operation.operationId}`;
             const toolDescription =
               operation.description ||
               `Make a ${method.toUpperCase()} request to ${path}`;
@@ -148,8 +146,8 @@ export default function loadTools(specs: OpenAPISpec[], filters?: ToolFilters) {
               }
             }
 
-            tools.set(id, tool);
-            apis.set(id, api);
+            tools.set(name, tool);
+            apis.set(name, api);
           });
       });
     });

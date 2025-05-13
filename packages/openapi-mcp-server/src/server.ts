@@ -250,8 +250,8 @@ export default class OpenAPIMCPServer {
    * @returns
    */
   private async handleCallTool(request: CallToolRequest) {
-    const { name } = request.params;
-    const id: string = name.split('---')[1]?.trim();
+    const id = request.params.name;
+    const name: string = id.split('--')[1]?.trim();
     const tool = this.tools.get(id);
     const api = this.apis.get(id);
     if (!tool || !api) {

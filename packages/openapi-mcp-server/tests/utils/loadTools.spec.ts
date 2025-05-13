@@ -11,6 +11,7 @@ describe('loadTools', () => {
     paths: Record<string, any>,
     info: Partial<OpenAPIV3.InfoObject> = {},
   ): OpenAPISpec => ({
+    name,
     service: name,
     path: `/path/to/${name}.yaml`,
     document: {
@@ -352,7 +353,7 @@ describe('loadTools', () => {
     const { tools } = loadTools(specs, filter);
 
     for (const [, tool] of tools) {
-      expect(tool.name).toContain('getResource---');
+      expect(tool.name).toContain('--getResource');
     }
   });
 
