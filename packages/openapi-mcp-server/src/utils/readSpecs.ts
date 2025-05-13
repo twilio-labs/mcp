@@ -6,6 +6,7 @@ import { OpenAPIV3 } from 'openapi-types';
 
 export interface OpenAPISpec {
   service: string;
+  name: string;
   path: string;
   document: OpenAPIV3.Document<OpenAPIV3.OperationObject>;
 }
@@ -31,10 +32,16 @@ export default async function readSpecs(
       const document = (await SwaggerParser.bundle(
         fullPath,
       )) as OpenAPIV3.Document;
+      const service = path.basename(fullPath, path.extname(fullPath));
+      const name = service
+        .split('_')
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+        .join('');
 
       return [
         {
-          service: path.basename(fullPath, path.extname(fullPath)),
+          service,
+          name,
           path: fullPath,
           document,
         },

@@ -139,7 +139,7 @@ dist
 
 build/
 open-api/
-twilio-oai
+twilio-oai/
 .local/
 
 .DS_Store
