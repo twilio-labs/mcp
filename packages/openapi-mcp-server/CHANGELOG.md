@@ -1,5 +1,11 @@
 # @twilio-alpha/openapi-mcp-server
 
+## 0.2.1
+
+### Patch Changes
+
+- Update tool name to use filename instead of randomId
+
 ## 0.2.0
 
 ### Minor Changes
