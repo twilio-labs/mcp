@@ -33,11 +33,10 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@twilio-alpha/openapi-mcp-server": "0.2.1",
     "@apidevtools/swagger-parser": "^10.1.1",
     "@modelcontextprotocol/sdk": "^1.7.0",
+    "@twilio-alpha/openapi-mcp-server": "0.2.1",
     "inquirer": "^12.5.0",
-    "keytar": "^7.9.0",
     "minimist": "^1.2.8",
     "openapi-types": "^12.1.3"
   },
