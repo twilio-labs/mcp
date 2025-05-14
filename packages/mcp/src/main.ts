@@ -2,21 +2,18 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { logger } from '@twilio-alpha/openapi-mcp-server';
 
 import TwilioOpenAPIMCPServer from '@app/server';
-import { args, auth, type AccountCredentials } from '@app/utils';
+import { args, type AccountCredentials } from '@app/utils';
 
 let credentials: AccountCredentials | null;
 
 const { services, accountSid, apiKey, apiSecret, tags } = await args(
   process.argv,
 );
+
 if (accountSid && apiKey && apiSecret) {
   credentials = { accountSid, apiKey, apiSecret };
 } else {
-  credentials = await auth.getCredentials();
-}
-
-if (!credentials) {
-  logger.error('Error: No credentials found.');
+  logger.error('Error: Please provide credentials.');
   process.exit(1);
 }
 

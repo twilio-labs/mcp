@@ -27,3 +27,9 @@ export const toolRequiresAccountSid = (tool: Tool) => {
 
   return { requiresAccountSid: true, accountSidKey: 'accountSid' };
 };
+
+export type AccountCredentials = {
+  accountSid: string;
+  apiKey: string;
+  apiSecret: string;
+};
