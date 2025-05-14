@@ -1,5 +1,11 @@
 # @twilio-alpha/openapi-mcp-server
 
+## 0.2.2
+
+### Patch Changes
+
+- remove keytar
+
 ## 0.2.1
 
 ### Patch Changes
