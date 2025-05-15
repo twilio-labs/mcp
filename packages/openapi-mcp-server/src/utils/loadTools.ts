@@ -27,9 +27,47 @@ type Tool = MCPTool & {
   };
 };
 
+type JsonSchema = {
+  type: string;
+  description: string;
+  items?: JsonSchema;
+  properties?: Record<string, JsonSchema>;
+  required?: string[];
+  [key: string]: any; // For other schema properties
+};
+
 const trimSlashes = (str: string) => {
   return str.replace(/^\/+|\/+$/g, '');
 };
+
+function toSchema(
+  schema: OpenAPIV3.SchemaObject,
+  description?: string,
+): JsonSchema {
+  const result: JsonSchema = {
+    type: schema.type ?? 'string',
+    description: description ?? schema.description ?? '',
+  };
+
+  // Handle array types
+  if (schema.type === 'array' && schema.items) {
+    result.items = toSchema(schema.items as OpenAPIV3.SchemaObject);
+  }
+
+  // Handle object types
+  if (schema.type === 'object' && schema.properties) {
+    result.properties = {};
+    Object.entries(schema.properties).forEach(([key, value]) => {
+      result.properties![key] = toSchema(value as OpenAPIV3.SchemaObject);
+    });
+
+    if (schema.required) {
+      result.required = schema.required;
+    }
+  }
+
+  return result;
+}
 
 export default function loadTools(specs: OpenAPISpec[], filters?: ToolFilters) {
   const tools: Map<string, Tool> = new Map();
@@ -107,10 +145,10 @@ export default function loadTools(specs: OpenAPISpec[], filters?: ToolFilters) {
                 .forEach((param) => {
                   const schema = param.schema as OpenAPIV3.SchemaObject;
 
-                  tool.inputSchema.properties[param.name] = {
-                    type: schema.type ?? 'string',
-                    description: param.description || `${param.name} parameter`,
-                  };
+                  tool.inputSchema.properties[param.name] = toSchema(
+                    schema,
+                    param.description || `${param.name} parameter`,
+                  );
 
                   if (param.required) {
                     tool.inputSchema.required.push(param.name);
@@ -138,10 +176,10 @@ export default function loadTools(specs: OpenAPISpec[], filters?: ToolFilters) {
               if (schema.properties) {
                 Object.entries(schema.properties).forEach(([key, value]) => {
                   const property = value as OpenAPIV3.SchemaObject;
-                  tool.inputSchema.properties[key] = {
-                    type: property.type ?? 'string',
-                    description: property.description ?? `${key} parameter`,
-                  };
+                  tool.inputSchema.properties[key] = toSchema(
+                    property,
+                    property.description ?? `${key} parameter`,
+                  );
                 });
               }
             }
