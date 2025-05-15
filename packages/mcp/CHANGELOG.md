@@ -1,5 +1,16 @@
 # @twilio-alpha/mcp
 
+## 0.4.0
+
+### Minor Changes
+
+- filter by files in readSpec
+
+### Patch Changes
+
+- Updated dependencies
+  - @twilio-alpha/openapi-mcp-server@0.4.0
+
 ## 0.3.0
 
 ### Minor Changes
