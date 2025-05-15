@@ -12,10 +12,6 @@ export interface OpenAPISpec {
   document: OpenAPIV3.Document<OpenAPIV3.OperationObject>;
 }
 
-const readFiles = (dir: string) => {
-
-}
-
 export default async function readSpecs(
   dir: string,
   baseDir: string = dir,
