@@ -1,6 +1,5 @@
 import { defineConfig } from 'vitest/config';
 
-console.log('HI?');
 export default defineConfig({
   test: {
     globals: true,
