@@ -2,6 +2,7 @@ import { resolve } from 'path';
 
 import { defineConfig } from 'vitest/config';
 
+console.log('HI?');
 export default defineConfig({
   resolve: {
     alias: {

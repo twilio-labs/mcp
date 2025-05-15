@@ -1,5 +1,4 @@
-import { dirname, join } from 'path';
-import { fileURLToPath } from 'url';
+import { join } from 'path';
 
 import {
   ReadResourceRequest,
@@ -25,7 +24,7 @@ type Configuration = {
   credentials: Credentials;
 };
 
-const ROOT_DIR = join(dirname(fileURLToPath(import.meta.url)), '..');
+const ROOT_DIR = join(__dirname, '..');
 
 export default class TwilioOpenAPIMCPServer extends OpenAPIMCPServer {
   private readonly config: Configuration;
