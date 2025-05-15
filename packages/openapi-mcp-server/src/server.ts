@@ -288,7 +288,7 @@ export default class OpenAPIMCPServer {
    */
   private async load() {
     const apiDir = this.configuration.openAPIDir;
-    const specs = await readSpecs(apiDir, apiDir);
+    const specs = await readSpecs(apiDir, apiDir, this.configuration.filters?.services ?? []);
     const { tools, apis } = loadTools(specs, this.configuration.filters);
     this.tools = tools;
     this.apis = apis;

@@ -3,6 +3,7 @@ import path from 'path';
 
 import SwaggerParser from '@apidevtools/swagger-parser';
 import { OpenAPIV3 } from 'openapi-types';
+import logger from './logger';
 
 export interface OpenAPISpec {
   service: string;
@@ -11,9 +12,14 @@ export interface OpenAPISpec {
   document: OpenAPIV3.Document<OpenAPIV3.OperationObject>;
 }
 
+const readFiles = (dir: string) => {
+
+}
+
 export default async function readSpecs(
   dir: string,
   baseDir: string = dir,
+  fileNames: string[] = [],
 ): Promise<OpenAPISpec[]> {
   const entries = fs.readdirSync(dir, { withFileTypes: true });
   const specs = await Promise.all(
@@ -29,10 +35,16 @@ export default async function readSpecs(
         return null;
       }
 
+      const service = path.basename(fullPath, path.extname(fullPath));
+      if (fileNames.length > 0 && !fileNames.includes(service)) {
+        return null;
+      }
+      logger.info(`ALOHA PARSING ${service}`);
+
       const document = (await SwaggerParser.bundle(
         fullPath,
       )) as OpenAPIV3.Document;
-      const service = path.basename(fullPath, path.extname(fullPath));
+
       const name = service
         .split('_')
         .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
