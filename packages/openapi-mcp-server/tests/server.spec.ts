@@ -107,6 +107,7 @@ describe('OpenAPIMCPServer', () => {
     expect(readSpecs).toHaveBeenCalledWith(
       mockConfig.openAPIDir,
       mockConfig.openAPIDir,
+      [],
     );
 
     expect(loadTools).toHaveBeenCalled();

@@ -14,6 +14,7 @@ export interface OpenAPISpec {
 export default async function readSpecs(
   dir: string,
   baseDir: string = dir,
+  fileNames: string[] = [],
 ): Promise<OpenAPISpec[]> {
   const entries = fs.readdirSync(dir, { withFileTypes: true });
   const specs = await Promise.all(
@@ -29,10 +30,15 @@ export default async function readSpecs(
         return null;
       }
 
+      const service = path.basename(fullPath, path.extname(fullPath));
+      if (fileNames.length > 0 && !fileNames.includes(service)) {
+        return null;
+      }
+
       const document = (await SwaggerParser.bundle(
         fullPath,
       )) as OpenAPIV3.Document;
-      const service = path.basename(fullPath, path.extname(fullPath));
+
       const name = service
         .split('_')
         .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
