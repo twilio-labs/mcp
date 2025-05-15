@@ -1,5 +1,11 @@
 # @twilio-alpha/openapi-mcp-server
 
+## 0.3.0
+
+### Minor Changes
+
+- use cjs
+
 ## 0.2.3
 
 ### Patch Changes
