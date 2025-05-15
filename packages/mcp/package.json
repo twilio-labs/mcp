@@ -1,6 +1,6 @@
 {
   "name": "@twilio-alpha/mcp",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "description": "This is a Model Context Protocol server that exposes all of Twilio APIs.",
   "keywords": [
     "model context protocol",
@@ -33,7 +33,7 @@
   "dependencies": {
     "@apidevtools/swagger-parser": "^10.1.1",
     "@modelcontextprotocol/sdk": "^1.7.0",
-    "@twilio-alpha/openapi-mcp-server": "0.2.3",
+    "@twilio-alpha/openapi-mcp-server": "0.3.0",
     "inquirer": "^12.5.0",
     "minimist": "^1.2.8",
     "openapi-types": "^12.1.3"
