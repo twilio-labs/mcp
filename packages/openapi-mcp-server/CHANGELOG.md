@@ -1,5 +1,11 @@
 # @twilio-alpha/openapi-mcp-server
 
+## 0.2.3
+
+### Patch Changes
+
+- Added support for array json schema type
+
 ## 0.2.2
 
 ### Patch Changes
