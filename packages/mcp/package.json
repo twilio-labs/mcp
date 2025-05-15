@@ -11,7 +11,6 @@
   ],
   "license": "MIT",
   "author": "Twilio",
-  "type": "module",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "bin": {
@@ -29,7 +28,6 @@
     "prepare": "[ -d twilio-oai ] && (cd twilio-oai && git pull) || git clone https://github.com/twilio/twilio-oai",
     "start": "node build",
     "test": "vitest run",
-    "test:coverage": "vitest run --coverage",
     "test:watch": "vitest"
   },
   "dependencies": {
@@ -41,17 +39,15 @@
     "openapi-types": "^12.1.3"
   },
   "devDependencies": {
-    "@ianvs/prettier-plugin-sort-imports": "^4.4.1",
     "@types/minimist": "^1.2.5",
     "@types/node": "^22.13.10",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
-    "@vitest/coverage-v8": "^3.0.9",
     "eslint": "^8.57.1",
     "eslint-config-airbnb-base": "15.0.0",
     "eslint-config-airbnb-typescript": "^18.0.0",
     "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-prettier": "^5.2.3",
+    "eslint-plugin-prettier": "^5.4.0",
     "eslint-plugin-unused-imports": "^3.2.0",
     "tsc-alias": "^1.8.11",
     "tsx": "^4.19.3",
@@ -60,7 +56,7 @@
   },
   "engines": {
     "node": ">=20.0.0",
-    "npm": ">=11.0.0"
+    "npm": ">=10.0.0"
   },
   "publishConfig": {
     "access": "public"
