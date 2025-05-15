@@ -700,6 +700,7 @@ describe('loadTools', () => {
   it('should skip specs without paths', () => {
     const specs: OpenAPISpec[] = [
       {
+        name: 'test',
         service: 'emptyService',
         path: '/path/to/empty_v1.yaml',
         document: {
@@ -800,5 +801,166 @@ describe('loadTools', () => {
 
     // The IDs in the Maps should be the same
     expect([...tools.keys()]).toEqual([...apis.keys()]);
+  });
+
+  it('should properly handle array type parameters and properties', () => {
+    const specs: OpenAPISpec[] = [
+      createMockSpec('service1', {
+        '/resources': {
+          // Test array parameters in query
+          get: {
+            operationId: 'listResources',
+            description: 'List resources with filters',
+            parameters: [
+              {
+                name: 'ids',
+                in: 'query',
+                description: 'Filter by multiple IDs',
+                schema: {
+                  type: 'array',
+                  items: {
+                    type: 'string',
+                  },
+                },
+              },
+              {
+                name: 'tags',
+                in: 'query',
+                description: 'Filter by tags',
+                schema: {
+                  type: 'array',
+                  items: {
+                    type: 'string',
+                  },
+                },
+              },
+            ],
+          },
+          // Test array properties in request body
+          post: {
+            operationId: 'createResources',
+            description: 'Create multiple resources at once',
+            requestBody: {
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    required: ['items'],
+                    properties: {
+                      items: {
+                        type: 'array',
+                        description: 'List of resources to create',
+                        items: {
+                          type: 'object',
+                          properties: {
+                            name: {
+                              type: 'string',
+                              description: 'Resource name',
+                            },
+                            count: {
+                              type: 'integer',
+                              description: 'Resource count',
+                            },
+                            subtypes: {
+                              type: 'array',
+                              description: 'Resource subtypes',
+                              items: {
+                                type: 'string',
+                              },
+                            },
+                          },
+                        },
+                      },
+                      options: {
+                        type: 'object',
+                        description: 'Creation options',
+                        properties: {
+                          validateOnly: {
+                            type: 'boolean',
+                            description: "Only validate, don't create",
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      }),
+    ];
+
+    const filter = {
+      services: [],
+      tags: [],
+    };
+
+    const { tools } = loadTools(specs, filter);
+
+    expect(tools.size).toBe(2);
+
+    // Find the GET operation tool
+    let getTool;
+    let postTool;
+    for (const [name, tool] of tools) {
+      if (name.includes('listResources')) {
+        getTool = tool;
+      } else if (name.includes('createResources')) {
+        postTool = tool;
+      }
+    }
+
+    if (!getTool || !postTool) {
+      process.exit(1);
+      return;
+    }
+
+    // Check query parameters with array type
+    expect(getTool).toBeDefined();
+    expect(getTool.inputSchema.properties.ids.type).toBe('array');
+    expect(getTool.inputSchema.properties.ids.items).toBeDefined();
+    expect(getTool.inputSchema.properties.ids.items.type).toBe('string');
+    expect(getTool.inputSchema.properties.tags.type).toBe('array');
+    expect(getTool.inputSchema.properties.tags.items).toBeDefined();
+    expect(getTool.inputSchema.properties.tags.items.type).toBe('string');
+
+    // Check request body with nested arrays and objects
+    expect(postTool).toBeDefined();
+
+    // Check top-level array property
+    expect(postTool.inputSchema.properties.items.type).toBe('array');
+    expect(postTool.inputSchema.properties.items.items).toBeDefined();
+    expect(postTool.inputSchema.properties.items.items.type).toBe('object');
+
+    // Check nested object properties inside array
+    expect(
+      postTool.inputSchema.properties.items.items.properties,
+    ).toBeDefined();
+    expect(
+      postTool.inputSchema.properties.items.items.properties.name.type,
+    ).toBe('string');
+    expect(
+      postTool.inputSchema.properties.items.items.properties.count.type,
+    ).toBe('integer');
+
+    // Check nested array inside array items object
+    expect(
+      postTool.inputSchema.properties.items.items.properties.subtypes.type,
+    ).toBe('array');
+    expect(
+      postTool.inputSchema.properties.items.items.properties.subtypes.items
+        .type,
+    ).toBe('string');
+
+    // Check nested object property
+    expect(postTool.inputSchema.properties.options.type).toBe('object');
+    expect(postTool.inputSchema.properties.options.properties).toBeDefined();
+    expect(
+      postTool.inputSchema.properties.options.properties.validateOnly.type,
+    ).toBe('boolean');
+
+    // Check required fields
+    expect(postTool.inputSchema.required).toContain('items');
   });
 });
