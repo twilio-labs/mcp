@@ -3,7 +3,6 @@ import path from 'path';
 
 import SwaggerParser from '@apidevtools/swagger-parser';
 import { OpenAPIV3 } from 'openapi-types';
-import logger from './logger';
 
 export interface OpenAPISpec {
   service: string;
@@ -35,7 +34,6 @@ export default async function readSpecs(
       if (fileNames.length > 0 && !fileNames.includes(service)) {
         return null;
       }
-      logger.info(`ALOHA PARSING ${service}`);
 
       const document = (await SwaggerParser.bundle(
         fullPath,
