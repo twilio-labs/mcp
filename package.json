@@ -37,8 +37,5 @@
   "engines": {
     "node": ">=20.0.0",
     "npm": ">=10.0.0"
-  },
-  "dependencies": {
-    "form-data": "^4.0.2"
   }
 }
