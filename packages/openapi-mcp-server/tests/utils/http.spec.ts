@@ -1,5 +1,6 @@
 import fetch, { Response } from 'node-fetch';
 import { beforeEach, describe, expect, it, Mock, test, vi } from 'vitest';
+import FormData from 'form-data';
 
 import Http, { Authorization, interpolateUrl } from '@app/utils/http';
 
@@ -427,7 +428,6 @@ describe('Http', () => {
 
   describe('upload requests', () => {
     it('should make a successful file upload request', async () => {
-      const FormData = require('form-data');
       const formData = new FormData();
       formData.append('file', 'test file content', 'test.txt');
       formData.append('description', 'Test file upload');
@@ -468,7 +468,6 @@ describe('Http', () => {
     });
 
     it('should handle failed upload requests', async () => {
-      const FormData = require('form-data');
       const formData = new FormData();
       formData.append('file', 'invalid file content', 'invalid.txt');
 
@@ -496,7 +495,6 @@ describe('Http', () => {
     });
 
     it('should upload with custom headers', async () => {
-      const FormData = require('form-data');
       const formData = new FormData();
       formData.append('file', 'test content', 'test.txt');
 
@@ -513,7 +511,7 @@ describe('Http', () => {
       const result = await http.upload(
         'https://api.example.com/upload',
         formData,
-        { headers: { 'X-Custom-Header': 'custom-value' } }
+        { headers: { 'X-Custom-Header': 'custom-value' } },
       );
 
       expect(fetch).toHaveBeenCalledWith(
@@ -538,7 +536,6 @@ describe('Http', () => {
     });
 
     it('should handle FormData without getHeaders method', async () => {
-      const FormData = require('form-data');
       const formData = new FormData();
       formData.append('file', 'test content', 'test.txt');
 

@@ -5,8 +5,8 @@ import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
 import { loadTools, readSpecs } from '@app/utils';
 
-import OpenAPIMCPServer from '../src/server';
 import { API } from '@app/types';
+import OpenAPIMCPServer from '../src/server';
 
 vi.mock('@modelcontextprotocol/sdk/server/index.js', () => {
   return {
