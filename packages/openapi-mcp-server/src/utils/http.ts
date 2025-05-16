@@ -42,6 +42,8 @@ export type Configuration = {
   authorization?: Authorization;
 };
 
+const arrayRepeatUrls = ['serverless.twilio.com'];
+
 /**
  * Get the authorization header
  * @param authorization
@@ -145,7 +147,16 @@ export default class Http {
         // eslint-disable-next-line no-underscore-dangle
         options.body = request.body.__formData;
       } else if (['POST', 'PUT'].includes(request.method) && request.body) {
-        options.body = Http.getBody(request.body, request.headers);
+        const arrayRepeated = arrayRepeatUrls.some((x) =>
+          request.url.includes(x),
+        );
+        this.logger.error(`ALOHA ${arrayRepeated}`);
+        options.body = Http.getBody(
+          request.body,
+          request.headers,
+          arrayRepeated,
+        );
+        this.logger.error(`ALOHA ${JSON.stringify(options.body)}`);
       }
 
       logger.debug(
@@ -293,13 +304,28 @@ export default class Http {
   private static getBody(
     body: Record<string, unknown>,
     headers?: Record<string, string>,
+    arrayRepeat?: boolean,
   ): string {
     const contentType = headers?.['Content-Type'] as string;
     if (contentType === 'application/x-www-form-urlencoded') {
-      return qs.stringify(body, {
-        arrayFormat: 'repeat',
-        indices: false,
+      if (arrayRepeat) {
+        return qs.stringify(body, {
+          arrayFormat: 'repeat',
+          indices: false,
+        });
+      }
+
+      const processedBody: Record<string, unknown> = {};
+      Object.keys(body).forEach((key) => {
+        const value = body[key];
+        if (value !== null && typeof value === 'object') {
+          processedBody[key] = JSON.stringify(value);
+        } else {
+          processedBody[key] = value;
+        }
       });
+
+      return qs.stringify(processedBody);
     }
 
     return JSON.stringify(body);
