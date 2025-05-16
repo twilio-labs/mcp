@@ -1,5 +1,16 @@
 # @twilio-alpha/mcp
 
+## 0.5.0
+
+### Minor Changes
+
+- Support for upload Assets and Functions
+
+### Patch Changes
+
+- Updated dependencies
+  - @twilio-alpha/openapi-mcp-server@0.5.0
+
 ## 0.4.0
 
 ### Minor Changes
