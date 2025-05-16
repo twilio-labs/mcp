@@ -36,6 +36,7 @@ export const uploadFunctionExecution = async (
   }
 };
 
+// these are unused - it's a stub
 export const uploadFunctionAPI: API = {
   method: 'POST',
   contentType: 'multipart/form-data',

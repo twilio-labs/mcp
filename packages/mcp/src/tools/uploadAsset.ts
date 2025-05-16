@@ -37,6 +37,7 @@ export const uploadAssetExecution = async (
   }
 };
 
+// these are unused - it's a stub
 export const uploadAssetAPI: API = {
   method: 'POST',
   contentType: 'multipart/form-data',
@@ -46,7 +47,7 @@ export const uploadAssetAPI: API = {
 export const uploadAssetDefinition: Tool = {
   name,
   description:
-    'Upload a JavaScript file as a Twilio Serverless Asset. This creates a new version of the asset that can be deployed.',
+    "Create a new Asset resource. Assets are static files like HTML, CSS, images, or client-side JavaScript files that can be referenced by your Serverless Functions or served directly to clients. You must create a Service before creating Assets. After creating an Asset, you'll need to create Asset Versions to add the actual content.",
   inputSchema: {
     type: 'object',
     properties: {
