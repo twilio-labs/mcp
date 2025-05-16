@@ -208,6 +208,7 @@ describe('TwilioOpenAPIMCPServer', () => {
       // Mock resources array
       server.resources = [];
       server.tools = new Map();
+      server.apis = new Map();
 
       // Call method
       await server.loadCapabilities();
@@ -254,6 +255,7 @@ describe('TwilioOpenAPIMCPServer', () => {
       ['tool1', mockTool1],
       ['tool2', mockTool2],
     ]);
+    server.apis = new Map();
 
     await server.loadCapabilities();
 

@@ -1,4 +1,5 @@
 import fetch, { Response } from 'node-fetch';
+import FormData from 'form-data';
 import qs from 'qs';
 
 import { HttpMethod } from '@app/types';
@@ -133,7 +134,17 @@ export default class Http {
         };
       }
 
-      if (['POST', 'PUT'].includes(request.method) && request.body) {
+      // Handle FormData objects specially
+      if (request.body && '__formData' in request.body) {
+        // @ts-ignore
+        if (options.headers['Content-Type']) {
+          // @ts-ignore
+          delete options.headers['Content-Type'];
+        }
+        // @ts-ignore
+        // eslint-disable-next-line no-underscore-dangle
+        options.body = request.body.__formData;
+      } else if (['POST', 'PUT'].includes(request.method) && request.body) {
         options.body = Http.getBody(request.body, request.headers);
       }
 
@@ -246,6 +257,34 @@ export default class Http {
   }
 
   /**
+   * Makes a multipart form data upload request
+   * @param url the url to make the request to
+   * @param formData the FormData instance to upload
+   * @param options additional options for the request
+   */
+  public async upload<T>(
+    url: string,
+    formData: FormData,
+    options?: RequestOption,
+  ): Promise<HttpResponse<T>> {
+    const formHeaders = formData.getHeaders ? formData.getHeaders() : {};
+
+    const headers = {
+      ...(options?.headers || {}),
+      ...formHeaders,
+    };
+
+    return this.make<T>({
+      url,
+      method: 'POST',
+      headers,
+      // Use a special symbol or property to indicate this is a FormData object
+      // rather than a regular body that needs serialization
+      body: { __formData: formData },
+    });
+  }
+
+  /**
    * Returns the body of the request
    * @param body
    * @param headers
@@ -257,7 +296,10 @@ export default class Http {
   ): string {
     const contentType = headers?.['Content-Type'] as string;
     if (contentType === 'application/x-www-form-urlencoded') {
-      return qs.stringify(body);
+      return qs.stringify(body, {
+        arrayFormat: 'repeat',
+        indices: false,
+      });
     }
 
     return JSON.stringify(body);

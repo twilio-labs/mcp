@@ -424,4 +424,154 @@ describe('Http', () => {
       ).toBe('/api/v1/resource/{id}');
     });
   });
+
+  describe('upload requests', () => {
+    it('should make a successful file upload request', async () => {
+      const FormData = require('form-data');
+      const formData = new FormData();
+      formData.append('file', 'test file content', 'test.txt');
+      formData.append('description', 'Test file upload');
+
+      // Mock FormData's getHeaders method
+      formData.getHeaders = vi.fn().mockReturnValue({
+        'content-type': 'multipart/form-data; boundary=---boundary',
+      });
+
+      const responseData = { fileId: '12345', success: true };
+      const mockResponseObj = mockResponse(201, responseData);
+
+      (fetch as unknown as Mock).mockResolvedValueOnce(mockResponseObj);
+
+      const result = await http.upload(
+        'https://api.example.com/upload',
+        formData,
+      );
+
+      expect(fetch).toHaveBeenCalledWith(
+        'https://api.example.com/upload',
+        expect.objectContaining({
+          method: 'POST',
+          headers: expect.objectContaining({
+            'content-type': 'multipart/form-data; boundary=---boundary',
+            Authorization: 'Basic dGVzdC11c2VybmFtZTp0ZXN0LXBhc3N3b3Jk',
+          }),
+          body: formData,
+        }),
+      );
+
+      expect(result).toEqual({
+        ok: true,
+        statusCode: 201,
+        data: responseData,
+        response: mockResponseObj,
+      });
+    });
+
+    it('should handle failed upload requests', async () => {
+      const FormData = require('form-data');
+      const formData = new FormData();
+      formData.append('file', 'invalid file content', 'invalid.txt');
+
+      // Mock FormData's getHeaders method
+      formData.getHeaders = vi.fn().mockReturnValue({
+        'content-type': 'multipart/form-data; boundary=---boundary',
+      });
+
+      const errorData = { error: 'File upload failed' };
+      const mockResponseObj = mockResponse(400, errorData, false);
+
+      (fetch as unknown as Mock).mockResolvedValueOnce(mockResponseObj);
+
+      const result = await http.upload(
+        'https://api.example.com/upload',
+        formData,
+      );
+
+      expect(result).toEqual({
+        ok: false,
+        statusCode: 400,
+        error: new Error(JSON.stringify(errorData)),
+        response: mockResponseObj,
+      });
+    });
+
+    it('should upload with custom headers', async () => {
+      const FormData = require('form-data');
+      const formData = new FormData();
+      formData.append('file', 'test content', 'test.txt');
+
+      // Mock FormData's getHeaders method
+      formData.getHeaders = vi.fn().mockReturnValue({
+        'content-type': 'multipart/form-data; boundary=---boundary',
+      });
+
+      const responseData = { fileId: '12345', success: true };
+      const mockResponseObj = mockResponse(200, responseData);
+
+      (fetch as unknown as Mock).mockResolvedValueOnce(mockResponseObj);
+
+      const result = await http.upload(
+        'https://api.example.com/upload',
+        formData,
+        { headers: { 'X-Custom-Header': 'custom-value' } }
+      );
+
+      expect(fetch).toHaveBeenCalledWith(
+        'https://api.example.com/upload',
+        expect.objectContaining({
+          method: 'POST',
+          headers: expect.objectContaining({
+            'content-type': 'multipart/form-data; boundary=---boundary',
+            'X-Custom-Header': 'custom-value',
+            Authorization: 'Basic dGVzdC11c2VybmFtZTp0ZXN0LXBhc3N3b3Jk',
+          }),
+          body: formData,
+        }),
+      );
+
+      expect(result).toEqual({
+        ok: true,
+        statusCode: 200,
+        data: responseData,
+        response: mockResponseObj,
+      });
+    });
+
+    it('should handle FormData without getHeaders method', async () => {
+      const FormData = require('form-data');
+      const formData = new FormData();
+      formData.append('file', 'test content', 'test.txt');
+
+      // Simulate FormData without getHeaders method
+      formData.getHeaders = undefined;
+
+      const responseData = { fileId: '12345', success: true };
+      const mockResponseObj = mockResponse(200, responseData);
+
+      (fetch as unknown as Mock).mockResolvedValueOnce(mockResponseObj);
+
+      const result = await http.upload(
+        'https://api.example.com/upload',
+        formData,
+      );
+
+      expect(fetch).toHaveBeenCalledWith(
+        'https://api.example.com/upload',
+        expect.objectContaining({
+          method: 'POST',
+          headers: expect.objectContaining({
+            Authorization: 'Basic dGVzdC11c2VybmFtZTp0ZXN0LXBhc3N3b3Jk',
+          }),
+          body: formData,
+        }),
+      );
+
+      expect(result).toEqual({
+        ok: true,
+        statusCode: 200,
+        data: responseData,
+        response: mockResponseObj,
+      });
+    });
+  });
 });
