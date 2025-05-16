@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
 import { loadTools, readSpecs } from '@app/utils';
 
+import { API } from '@app/types';
 import OpenAPIMCPServer from '../src/server';
 
 vi.mock('@modelcontextprotocol/sdk/server/index.js', () => {
@@ -153,8 +154,8 @@ describe('OpenAPIMCPServer', () => {
         await this.load();
       }
 
-      public testMakeRequest(api: any) {
-        return this.makeRequest(api);
+      public testMakeRequest(id: string, api: any) {
+        return this.makeRequest(id, api);
       }
     }
 
@@ -170,7 +171,7 @@ describe('OpenAPIMCPServer', () => {
 
     testServer.http.get = vi.fn().mockResolvedValue(mockHttpResponse);
 
-    const result = await testServer.testMakeRequest({
+    const result = await testServer.testMakeRequest('test-id', {
       path: '/api/test',
       method: 'GET',
       contentType: 'application/json',
@@ -184,8 +185,8 @@ describe('OpenAPIMCPServer', () => {
 
   it('should make POST requests via the http util', async () => {
     class TestServer extends OpenAPIMCPServer {
-      public testMakeRequest(api: any, body?: any) {
-        return this.makeRequest(api, body);
+      public testMakeRequest(id: string, api: API, body?: any) {
+        return this.makeRequest(id, api, body);
       }
     }
 
@@ -203,6 +204,7 @@ describe('OpenAPIMCPServer', () => {
     testServer.http.post = vi.fn().mockResolvedValue(mockHttpResponse);
 
     const result = await testServer.testMakeRequest(
+      'test-id',
       { path: '/api/test', method: 'POST', contentType: 'application/json' },
       mockBody,
     );
@@ -215,8 +217,8 @@ describe('OpenAPIMCPServer', () => {
 
   it('should make DELETE requests via the http util', async () => {
     class TestServer extends OpenAPIMCPServer {
-      public testMakeRequest(api: any, body?: any) {
-        return this.makeRequest(api, body);
+      public testMakeRequest(id: string, api: API, body?: any) {
+        return this.makeRequest(id, api, body);
       }
     }
 
@@ -231,7 +233,7 @@ describe('OpenAPIMCPServer', () => {
 
     testServer.http.delete = vi.fn().mockResolvedValue(mockHttpResponse);
 
-    const result = await testServer.testMakeRequest({
+    const result = await testServer.testMakeRequest('test-id', {
       path: '/api/test',
       method: 'DELETE',
       contentType: 'application/json',
@@ -245,15 +247,15 @@ describe('OpenAPIMCPServer', () => {
 
   it('should throw an error for unsupported HTTP methods', async () => {
     class TestServer extends OpenAPIMCPServer {
-      public testMakeRequest(api: any, body?: any) {
-        return this.makeRequest(api, body);
+      public testMakeRequest(id: string, api: API, body?: any) {
+        return this.makeRequest(id, api, body);
       }
     }
 
     const testServer = new TestServer(mockConfig);
 
     await expect(
-      testServer.testMakeRequest({
+      testServer.testMakeRequest('test-id', {
         path: '/api/test',
         method: 'PATCH' as any,
         contentType: 'application/json',
@@ -265,7 +267,7 @@ describe('OpenAPIMCPServer', () => {
     class CustomServer extends OpenAPIMCPServer {
       protected callToolBody(
         tool: Tool,
-        api: any,
+        api: API,
         body: Record<string, unknown>,
       ) {
         return { ...body, extra: 'value' };

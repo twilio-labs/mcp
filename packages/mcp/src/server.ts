@@ -13,6 +13,7 @@ import {
 
 import { Credentials } from '@app/types';
 import { toolRequiresAccountSid } from '@app/utils';
+import { loadAdditionalTools, uploadFunction, uploadAsset } from '@app/tools';
 
 type Configuration = {
   server: {
@@ -104,6 +105,21 @@ export default class TwilioOpenAPIMCPServer extends OpenAPIMCPServer {
     throw new Error(`Resource ${name} not found`);
   }
 
+  protected async makeRequest(
+    id: string,
+    api: API,
+    body?: Record<string, unknown>,
+  ) {
+    if (id === uploadFunction.name && body) {
+      return uploadFunction.uploadFunctionExecution(body, this.http);
+    }
+    if (id === uploadAsset.name && body) {
+      return uploadAsset.uploadAssetExecution(body, this.http);
+    }
+
+    return super.makeRequest(id, api, body);
+  }
+
   /**
    * Loads resources for the server
    * @returns
@@ -127,6 +143,12 @@ export default class TwilioOpenAPIMCPServer extends OpenAPIMCPServer {
 
         this.tools.set(id, updatedTool);
       }
+    }
+
+    const additionalTools = loadAdditionalTools(this.configuration?.filters);
+    for (const [id, { tool, api }] of additionalTools) {
+      this.tools.set(id, tool);
+      this.apis.set(id, api);
     }
   }
 }

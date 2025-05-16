@@ -59,7 +59,7 @@ export default class OpenAPIMCPServer {
 
   protected readonly logger;
 
-  private http: Http;
+  protected readonly http: Http;
 
   constructor(config: OpenAPIMCPServerConfiguration) {
     this.configuration = config;
@@ -85,11 +85,16 @@ export default class OpenAPIMCPServer {
 
   /**
    * Make a request to the API
+   * @param id
    * @param api
    * @param body
    * @private
    */
-  protected async makeRequest(api: API, body?: Record<string, unknown>) {
+  protected async makeRequest(
+    id: string,
+    api: API,
+    body?: Record<string, unknown>,
+  ) {
     const url = interpolateUrl(api.path, body);
     const headers = {
       'Content-Type': api.contentType,
@@ -260,7 +265,7 @@ export default class OpenAPIMCPServer {
     const rawBody = request.params.arguments ?? {};
     const body = this.callToolBody(tool, api, rawBody);
 
-    const httpResponse = await this.makeRequest(api, body);
+    const httpResponse = await this.makeRequest(id, api, body);
     if (!httpResponse.ok) {
       this.logger.error({
         message: 'failed to make request',
