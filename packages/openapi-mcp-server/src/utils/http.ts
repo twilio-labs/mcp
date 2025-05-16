@@ -150,13 +150,11 @@ export default class Http {
         const arrayRepeated = arrayRepeatUrls.some((x) =>
           request.url.includes(x),
         );
-        this.logger.error(`ALOHA ${arrayRepeated}`);
         options.body = Http.getBody(
           request.body,
           request.headers,
           arrayRepeated,
         );
-        this.logger.error(`ALOHA ${JSON.stringify(options.body)}`);
       }
 
       logger.debug(
