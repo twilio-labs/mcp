@@ -78,6 +78,13 @@ export const uploadAssetDefinition: Tool = {
           'The content type of the Asset being uploaded. This must match the actual content of the file.',
       },
     },
-    required: ['serviceSid', 'assetSid', 'path', 'visibility', 'content'],
+    required: [
+      'serviceSid',
+      'assetSid',
+      'path',
+      'visibility',
+      'content',
+      'contentType',
+    ],
   },
 };
