@@ -128,7 +128,7 @@ export default class Http {
       headers: {
         'Content-Type': 'application/json',
         ...getAuthorization(config.authorization),
-        'x-mcp-client-id': `twilio-openapi-mcp-server/${this.version}`,
+        'x-mcp-server-id': `twilio-openapi-mcp-server/${this.version}`,
         'user-agent': `twilio-openapi-mcp-server/${this.version}`,
       },
     };
