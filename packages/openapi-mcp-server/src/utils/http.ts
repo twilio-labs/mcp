@@ -123,6 +123,7 @@ export default class Http {
   private readonly version: string;
 
   constructor(config: Configuration) {
+    this.version = getPackageVersion();
     this.defaultRequest = {
       headers: {
         'Content-Type': 'application/json',
@@ -133,7 +134,6 @@ export default class Http {
     };
 
     this.logger = logger.child({ module: 'Http' });
-    this.version = getPackageVersion();
   }
 
   /**
