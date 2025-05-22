@@ -47,6 +47,10 @@ describe('Http', () => {
           headers: expect.objectContaining({
             Authorization: 'Basic dGVzdC11c2VybmFtZTp0ZXN0LXBhc3N3b3Jk',
             'Content-Type': 'application/json',
+            'x-mcp-client-id': expect.stringMatching(
+              'twilio-openapi-mcp-server',
+            ),
+            'user-agent': expect.stringMatching('twilio-openapi-mcp-server'),
           }),
         }),
       );
@@ -139,6 +143,10 @@ describe('Http', () => {
           method: 'POST',
           headers: expect.objectContaining({
             'Content-Type': 'application/x-www-form-urlencoded',
+            'x-mcp-client-id': expect.stringMatching(
+              'twilio-openapi-mcp-server',
+            ),
+            'user-agent': expect.stringMatching('twilio-openapi-mcp-server'),
           }),
           body: expect.any(String), // We're not testing the exact encoding, just that it's a string
         }),
@@ -193,6 +201,10 @@ describe('Http', () => {
           headers: expect.objectContaining({
             Authorization: 'Basic dGVzdC11c2VybmFtZTp0ZXN0LXBhc3N3b3Jk',
             'Content-Type': 'application/json',
+            'x-mcp-client-id': expect.stringMatching(
+              'twilio-openapi-mcp-server',
+            ),
+            'user-agent': expect.stringMatching('twilio-openapi-mcp-server'),
           }),
           body: JSON.stringify(requestBody),
         }),
@@ -229,6 +241,10 @@ describe('Http', () => {
           method: 'PUT',
           headers: expect.objectContaining({
             'Content-Type': 'application/x-www-form-urlencoded',
+            'x-mcp-client-id': expect.stringMatching(
+              'twilio-openapi-mcp-server',
+            ),
+            'user-agent': expect.stringMatching('twilio-openapi-mcp-server'),
           }),
           body: expect.any(String),
         }),
@@ -278,6 +294,10 @@ describe('Http', () => {
           method: 'DELETE',
           headers: expect.objectContaining({
             'Content-Type': 'application/json',
+            'x-mcp-client-id': expect.stringMatching(
+              'twilio-openapi-mcp-server',
+            ),
+            'user-agent': expect.stringMatching('twilio-openapi-mcp-server'),
           }),
         }),
       );
@@ -454,6 +474,10 @@ describe('Http', () => {
           headers: expect.objectContaining({
             'content-type': 'multipart/form-data; boundary=---boundary',
             Authorization: 'Basic dGVzdC11c2VybmFtZTp0ZXN0LXBhc3N3b3Jk',
+            'x-mcp-client-id': expect.stringMatching(
+              'twilio-openapi-mcp-server',
+            ),
+            'user-agent': expect.stringMatching('twilio-openapi-mcp-server'),
           }),
           body: formData,
         }),
@@ -522,6 +546,10 @@ describe('Http', () => {
             'content-type': 'multipart/form-data; boundary=---boundary',
             'X-Custom-Header': 'custom-value',
             Authorization: 'Basic dGVzdC11c2VybmFtZTp0ZXN0LXBhc3N3b3Jk',
+            'x-mcp-client-id': expect.stringMatching(
+              'twilio-openapi-mcp-server',
+            ),
+            'user-agent': expect.stringMatching('twilio-openapi-mcp-server'),
           }),
           body: formData,
         }),
@@ -558,6 +586,10 @@ describe('Http', () => {
           method: 'POST',
           headers: expect.objectContaining({
             Authorization: 'Basic dGVzdC11c2VybmFtZTp0ZXN0LXBhc3N3b3Jk',
+            'x-mcp-client-id': expect.stringMatching(
+              'twilio-openapi-mcp-server',
+            ),
+            'user-agent': expect.stringMatching('twilio-openapi-mcp-server'),
           }),
           body: formData,
         }),
