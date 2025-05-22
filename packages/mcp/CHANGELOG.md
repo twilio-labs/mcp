@@ -1,5 +1,16 @@
 # @twilio-alpha/mcp
 
+## 0.6.0
+
+### Minor Changes
+
+- add header to identity server
+
+### Patch Changes
+
+- Updated dependencies
+  - @twilio-alpha/openapi-mcp-server@0.6.0
+
 ## 0.5.1
 
 ### Patch Changes
