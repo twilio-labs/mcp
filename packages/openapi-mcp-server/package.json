@@ -1,6 +1,6 @@
 {
   "name": "@twilio-alpha/openapi-mcp-server",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "description": "A Model Context Protocol server that to expose OpenAPI specs.",
   "keywords": [
     "model context protocol",
