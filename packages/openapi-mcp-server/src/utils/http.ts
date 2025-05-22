@@ -1,10 +1,24 @@
 import fetch, { Response } from 'node-fetch';
 import FormData from 'form-data';
 import qs from 'qs';
+import * as fs from 'fs';
+import * as path from 'path';
 
 import { HttpMethod } from '@app/types';
 
 import logger from './logger';
+
+function getPackageVersion(): string {
+  try {
+    const packageJsonPath = path.resolve(__dirname, '../../package.json');
+    const packageJsonData = fs.readFileSync(packageJsonPath, 'utf8');
+    const packageJson = JSON.parse(packageJsonData);
+    return packageJson.version;
+  } catch (error) {
+    logger.error(`Failed to read package.json: ${error}`);
+    return 'unknown';
+  }
+}
 
 type SuccessResponse<T> = {
   ok: true;
@@ -106,11 +120,16 @@ export default class Http {
 
   private readonly logger;
 
+  private readonly version: string;
+
   constructor(config: Configuration) {
+    this.version = getPackageVersion();
     this.defaultRequest = {
       headers: {
         'Content-Type': 'application/json',
         ...getAuthorization(config.authorization),
+        'x-mcp-server-id': `twilio-openapi-mcp-server/${this.version}`,
+        'user-agent': `twilio-openapi-mcp-server/${this.version}`,
       },
     };
 
@@ -123,11 +142,11 @@ export default class Http {
   private async make<T>(request: HttpRequest): Promise<HttpResponse<T>> {
     try {
       logger.debug(`request object: ${JSON.stringify(request)}`);
-
       const options: RequestInit = {
         ...this.defaultRequest,
         method: request.method,
       };
+
       if (request.headers) {
         // @ts-ignore
         options.headers = {
