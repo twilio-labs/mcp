@@ -17,12 +17,8 @@ import parsedArgs from './utils/args';
     },
     openAPIDir: args.apiPath,
   };
-  if (args.username && args.password) {
-    config.authorization = {
-      type: 'BasicAuth',
-      username: args.username,
-      password: args.password,
-    };
+  if (args.authorization) {
+    config.authorization = args.authorization;
   }
 
   const server = new OpenAPIMCPServer(config);
