@@ -1,5 +1,18 @@
 # @twilio-alpha/mcp
 
+## 0.7.0
+
+### Minor Changes
+
+- b500eeb: Update for more auth models
+- More auth
+
+### Patch Changes
+
+- Updated dependencies [b500eeb]
+- Updated dependencies
+  - @twilio-alpha/openapi-mcp-server@0.7.0
+
 ## 0.6.0
 
 ### Minor Changes
