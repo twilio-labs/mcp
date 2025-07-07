@@ -46,11 +46,21 @@ type HttpRequest = RequestOption & {
   body?: Record<string, unknown>;
 };
 
-export type Authorization = {
-  type: 'BasicAuth';
-  username: string;
-  password: string;
-};
+export type Authorization =
+  | {
+      type: 'Basic';
+      username: string;
+      password: string;
+    }
+  | {
+      type: 'Bearer';
+      token: string;
+    }
+  | {
+      type: 'ApiKey';
+      key: string;
+      value: string;
+    };
 
 export type Configuration = {
   authorization?: Authorization;
@@ -69,7 +79,7 @@ function getAuthorization(
     return {};
   }
 
-  if (authorization.type === 'BasicAuth') {
+  if (authorization.type === 'Basic') {
     return {
       Authorization: `Basic ${Buffer.from(
         `${authorization.username}:${authorization.password}`,
@@ -77,6 +87,19 @@ function getAuthorization(
     };
   }
 
+  if (authorization.type === 'Bearer') {
+    return {
+      Authorization: `Bearer ${authorization.token}`,
+    };
+  }
+
+  if (authorization.type === 'ApiKey') {
+    return {
+      [authorization.key]: authorization.value,
+    };
+  }
+
+  // @ts-ignore
   throw new Error(`Unsupported authorization type: ${authorization.type}`);
 }
 

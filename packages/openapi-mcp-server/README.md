@@ -23,15 +23,19 @@ The easiest way to get started is to edit the configuration of your client to po
         "@twilio-alpha/openapi-mcp-server",
         "--apiPath",
         "<PATH_TO_OPEN_API_YAML_DIR>",
-        "--username",
-        "YOUR_USERNAME",
-        "--password",
-        "YOUR_PASSWORD"
+        "--authorization",
+        "<AUTHORIZATION>"
       ]
     }
   }
 }
 ```
+
+where `<AUTHORIZATION>` can be either of:
+
+- `Basic`: Basic authentication using username and password. Provide as `Basic/username:password`.
+- `Bearer`: Bearer token authentication. Provide as `Bearer/token`.
+- `ApiKey`: API key authentication. Provide as `ApiKey/key:value`.
 
 ## Security Recommendations
 
@@ -41,9 +45,13 @@ To guard against injection attacks that may allow untrusted systems access to yo
 
 You can pass the following optional parameters to the `mcp` server:
 
-**--username / --password (optional)**
+**--authorization (optional)**
 
-If provided, the username/password will be used as basic-auth authentication with the API calls.
+If provided, the HTTP requests are authenticated using the provided authorization method.
+
+- `Basic`: Basic authentication using username and password. Provide as `Basic/username:password`.
+- `Bearer`: Bearer token authentication. Provide as `Bearer/token`.
+- `ApiKey`: API key authentication. Provide as `ApiKey/key:value`.
 
 **--services (optional)**
 

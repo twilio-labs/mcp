@@ -45,7 +45,7 @@ export default class TwilioOpenAPIMCPServer extends OpenAPIMCPServer {
       openAPIDir: join(ROOT_DIR, 'twilio-oai', 'spec', 'yaml'),
       filters: config.filters,
       authorization: {
-        type: 'BasicAuth',
+        type: 'Basic',
         username: config.credentials.apiKey,
         password: config.credentials.apiSecret,
       },

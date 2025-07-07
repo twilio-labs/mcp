@@ -11,7 +11,7 @@ vi.mock('node-fetch', () => ({
 
 describe('Http', () => {
   const mockCredentials: Authorization = {
-    type: 'BasicAuth',
+    type: 'Basic',
     username: 'test-username',
     password: 'test-password',
   };
