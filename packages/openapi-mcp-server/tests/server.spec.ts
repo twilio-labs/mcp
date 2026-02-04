@@ -516,4 +516,73 @@ describe('OpenAPIMCPServer', () => {
       customServer.testEnsureCapability('prompts');
     }).toThrow('prompts not supported');
   });
+
+  it('should reverse-map sanitized parameter names in callToolBody', () => {
+    class TestServer extends OpenAPIMCPServer {
+      public testCallToolBody(
+        tool: Tool,
+        api: API,
+        body: Record<string, unknown>,
+      ) {
+        return this.callToolBody(tool, api, body);
+      }
+    }
+
+    const testServer = new TestServer(mockConfig);
+
+    const apiWithMapping: API = {
+      path: '/api/calls',
+      method: 'GET',
+      contentType: 'application/json',
+      parameterNameMapping: {
+        DateCreated_before: 'DateCreated<',
+        StartTime_after: 'StartTime>',
+      },
+    };
+
+    const result = testServer.testCallToolBody(
+      mockTool,
+      apiWithMapping,
+      {
+        DateCreated_before: '2024-01-01',
+        StartTime_after: '2024-06-01',
+        Status: 'completed',
+      },
+    );
+
+    expect(result).toEqual({
+      'DateCreated<': '2024-01-01',
+      'StartTime>': '2024-06-01',
+      Status: 'completed',
+    });
+  });
+
+  it('should pass body through unchanged when no parameterNameMapping exists', () => {
+    class TestServer extends OpenAPIMCPServer {
+      public testCallToolBody(
+        tool: Tool,
+        api: API,
+        body: Record<string, unknown>,
+      ) {
+        return this.callToolBody(tool, api, body);
+      }
+    }
+
+    const testServer = new TestServer(mockConfig);
+
+    const apiWithoutMapping: API = {
+      path: '/api/resource',
+      method: 'GET',
+      contentType: 'application/json',
+    };
+
+    const body = { param1: 'value1', param2: 'value2' };
+    const result = testServer.testCallToolBody(
+      mockTool,
+      apiWithoutMapping,
+      body,
+    );
+
+    expect(result).toBe(body);
+  });
 });
