@@ -40,6 +40,21 @@ const trimSlashes = (str: string) => {
   return str.replace(/^\/+|\/+$/g, '');
 };
 
+/**
+ * Sanitize property keys to match the pattern required by LLM tool-use APIs.
+ * Twilio's OpenAPI spec includes parameter names with angle brackets
+ * (e.g., StartTime<, EndTime>) for date range filtering. These characters
+ * are rejected by APIs that validate property keys against
+ * /^[a-zA-Z0-9_.-]{1,64}$/.
+ */
+const sanitizePropertyKey = (key: string): string => {
+  return key
+    .replace(/</g, '_lt')
+    .replace(/>/g, '_gt')
+    .replace(/[^a-zA-Z0-9_.\-]/g, '_')
+    .slice(0, 64);
+};
+
 function toSchema(
   schema: OpenAPIV3.SchemaObject,
   description?: string,
@@ -58,7 +73,9 @@ function toSchema(
   if (schema.type === 'object' && schema.properties) {
     result.properties = {};
     Object.entries(schema.properties).forEach(([key, value]) => {
-      result.properties![key] = toSchema(value as OpenAPIV3.SchemaObject);
+      result.properties![sanitizePropertyKey(key)] = toSchema(
+        value as OpenAPIV3.SchemaObject,
+      );
     });
 
     if (schema.required) {
@@ -144,14 +161,15 @@ export default function loadTools(specs: OpenAPISpec[], filters?: ToolFilters) {
                 .filter((param) => 'name' in param && 'in' in param)
                 .forEach((param) => {
                   const schema = param.schema as OpenAPIV3.SchemaObject;
+                  const safeKey = sanitizePropertyKey(param.name);
 
-                  tool.inputSchema.properties[param.name] = toSchema(
+                  tool.inputSchema.properties[safeKey] = toSchema(
                     schema,
                     param.description || `${param.name} parameter`,
                   );
 
                   if (param.required) {
-                    tool.inputSchema.required.push(param.name);
+                    tool.inputSchema.required.push(safeKey);
                   }
                 });
             }
@@ -176,7 +194,8 @@ export default function loadTools(specs: OpenAPISpec[], filters?: ToolFilters) {
               if (schema.properties) {
                 Object.entries(schema.properties).forEach(([key, value]) => {
                   const property = value as OpenAPIV3.SchemaObject;
-                  tool.inputSchema.properties[key] = toSchema(
+                  const safeKey = sanitizePropertyKey(key);
+                  tool.inputSchema.properties[safeKey] = toSchema(
                     property,
                     property.description ?? `${key} parameter`,
                   );

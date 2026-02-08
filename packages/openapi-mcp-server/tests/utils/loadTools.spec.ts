@@ -621,6 +621,62 @@ describe('loadTools', () => {
     }
   });
 
+  it('should sanitize property keys with invalid characters', () => {
+    const specs: OpenAPISpec[] = [
+      createMockSpec('service1', {
+        '/calls': {
+          get: {
+            operationId: 'listCalls',
+            description: 'List calls',
+            parameters: [
+              {
+                name: 'StartTime<',
+                in: 'query',
+                description: 'Filter by start time before',
+                schema: { type: 'string' },
+              },
+              {
+                name: 'StartTime>',
+                in: 'query',
+                description: 'Filter by start time after',
+                schema: { type: 'string' },
+              },
+              {
+                name: 'EndTime<',
+                in: 'query',
+                description: 'Filter by end time before',
+                schema: { type: 'string' },
+              },
+            ],
+          },
+        },
+      }),
+    ];
+
+    const { tools } = loadTools(specs);
+    const keyPattern = /^[a-zA-Z0-9_.\-]{1,64}$/;
+
+    for (const [, tool] of tools) {
+      const keys = Object.keys(tool.inputSchema.properties);
+      // All keys must match the valid pattern
+      for (const key of keys) {
+        expect(key).toMatch(keyPattern);
+      }
+      // Angle brackets should be replaced with _lt and _gt
+      expect(tool.inputSchema.properties).toHaveProperty('StartTime_lt');
+      expect(tool.inputSchema.properties).toHaveProperty('StartTime_gt');
+      expect(tool.inputSchema.properties).toHaveProperty('EndTime_lt');
+      // Original keys with angle brackets should NOT exist
+      expect(tool.inputSchema.properties).not.toHaveProperty('StartTime<');
+      expect(tool.inputSchema.properties).not.toHaveProperty('StartTime>');
+      expect(tool.inputSchema.properties).not.toHaveProperty('EndTime<');
+      // Descriptions should be preserved
+      expect(tool.inputSchema.properties.StartTime_lt.description).toBe(
+        'Filter by start time before',
+      );
+    }
+  });
+
   it('should use property key as description if none is provided', () => {
     const specs: OpenAPISpec[] = [
       createMockSpec('service1', {
