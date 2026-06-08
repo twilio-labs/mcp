@@ -2,6 +2,15 @@
   "name": "@twilio-alpha/mcp",
   "version": "0.7.0",
   "description": "This is a Model Context Protocol server that exposes all of Twilio APIs.",
+  "homepage": "https://github.com/twilio-labs/mcp#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/twilio-labs/mcp.git",
+    "directory": "packages/mcp"
+  },
+  "bugs": {
+    "url": "https://github.com/twilio-labs/mcp/issues"
+  },
   "keywords": [
     "model context protocol",
     "mcp",
