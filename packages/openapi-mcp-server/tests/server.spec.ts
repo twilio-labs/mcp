@@ -540,15 +540,11 @@ describe('OpenAPIMCPServer', () => {
       },
     };
 
-    const result = testServer.testCallToolBody(
-      mockTool,
-      apiWithMapping,
-      {
-        DateCreated_before: '2024-01-01',
-        StartTime_after: '2024-06-01',
-        Status: 'completed',
-      },
-    );
+    const result = testServer.testCallToolBody(mockTool, apiWithMapping, {
+      DateCreated_before: '2024-01-01',
+      StartTime_after: '2024-06-01',
+      Status: 'completed',
+    });
 
     expect(result).toEqual({
       'DateCreated<': '2024-01-01',
