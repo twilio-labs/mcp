@@ -124,7 +124,14 @@ export default class OpenAPIMCPServer {
    */
   // eslint-disable-next-line class-methods-use-this
   protected callToolBody(tool: Tool, api: API, body: Record<string, unknown>) {
-    return body;
+    if (!api.parameterNameMapping) {
+      return body;
+    }
+    const mapped: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(body)) {
+      mapped[api.parameterNameMapping[key] ?? key] = value;
+    }
+    return mapped;
   }
 
   /**

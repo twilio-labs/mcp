@@ -8,4 +8,5 @@ export type API = {
   method: HttpMethod;
   path: string;
   contentType: ContentType;
+  parameterNameMapping?: Record<string, string>; // sanitized → original
 };

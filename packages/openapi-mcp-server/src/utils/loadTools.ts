@@ -40,6 +40,20 @@ const trimSlashes = (str: string) => {
   return str.replace(/^\/+|\/+$/g, '');
 };
 
+// Anthropic API requires property names to match ^[a-zA-Z0-9_.-]{1,64}$
+const VALID_PROPERTY_KEY_PATTERN = /^[a-zA-Z0-9_.-]{1,64}$/;
+
+export function sanitizePropertyKey(name: string): string {
+  if (VALID_PROPERTY_KEY_PATTERN.test(name)) {
+    return name;
+  }
+  return name
+    .replace(/</g, '_before')
+    .replace(/>/g, '_after')
+    .replace(/[^a-zA-Z0-9_.-]/g, '_')
+    .slice(0, 64);
+}
+
 function toSchema(
   schema: OpenAPIV3.SchemaObject,
   description?: string,
@@ -144,14 +158,22 @@ export default function loadTools(specs: OpenAPISpec[], filters?: ToolFilters) {
                 .filter((param) => 'name' in param && 'in' in param)
                 .forEach((param) => {
                   const schema = param.schema as OpenAPIV3.SchemaObject;
+                  const sanitized = sanitizePropertyKey(param.name);
 
-                  tool.inputSchema.properties[param.name] = toSchema(
+                  tool.inputSchema.properties[sanitized] = toSchema(
                     schema,
                     param.description || `${param.name} parameter`,
                   );
 
+                  if (sanitized !== param.name) {
+                    if (!api.parameterNameMapping) {
+                      api.parameterNameMapping = {};
+                    }
+                    api.parameterNameMapping[sanitized] = param.name;
+                  }
+
                   if (param.required) {
-                    tool.inputSchema.required.push(param.name);
+                    tool.inputSchema.required.push(sanitized);
                   }
                 });
             }
@@ -169,18 +191,29 @@ export default function loadTools(specs: OpenAPISpec[], filters?: ToolFilters) {
             if (content?.schema) {
               const schema = content.schema as OpenAPIV3.SchemaObject;
 
-              if (schema.required) {
-                tool.inputSchema.required.push(...schema.required);
-              }
-
               if (schema.properties) {
                 Object.entries(schema.properties).forEach(([key, value]) => {
                   const property = value as OpenAPIV3.SchemaObject;
-                  tool.inputSchema.properties[key] = toSchema(
+                  const sanitized = sanitizePropertyKey(key);
+
+                  tool.inputSchema.properties[sanitized] = toSchema(
                     property,
                     property.description ?? `${key} parameter`,
                   );
+
+                  if (sanitized !== key) {
+                    if (!api.parameterNameMapping) {
+                      api.parameterNameMapping = {};
+                    }
+                    api.parameterNameMapping[sanitized] = key;
+                  }
                 });
+              }
+
+              if (schema.required) {
+                tool.inputSchema.required.push(
+                  ...schema.required.map((r) => sanitizePropertyKey(r)),
+                );
               }
             }
 
