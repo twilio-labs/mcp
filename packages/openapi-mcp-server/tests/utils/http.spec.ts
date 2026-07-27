@@ -2,7 +2,11 @@ import fetch, { Response } from 'node-fetch';
 import { beforeEach, describe, expect, it, Mock, test, vi } from 'vitest';
 import FormData from 'form-data';
 
-import Http, { Authorization, interpolateUrl } from '@app/utils/http';
+import Http, {
+  appendQueryParams,
+  Authorization,
+  interpolateUrl,
+} from '@app/utils/http';
 
 // Mock node-fetch
 vi.mock('node-fetch', () => ({
@@ -443,6 +447,73 @@ describe('Http', () => {
       expect(
         interpolateUrl('/api/{version}/resource/{id}', { version: 'v1' }),
       ).toBe('/api/v1/resource/{id}');
+    });
+  });
+
+  describe('appendQueryParams', () => {
+    test('should return the original URL if no params are provided', () => {
+      expect(appendQueryParams('/api/v1/resource')).toBe('/api/v1/resource');
+      expect(appendQueryParams('/api/v1/resource', undefined)).toBe(
+        '/api/v1/resource',
+      );
+    });
+
+    test('should return the original URL if params are empty', () => {
+      expect(appendQueryParams('/api/v1/resource', {})).toBe(
+        '/api/v1/resource',
+      );
+    });
+
+    test('should append string parameters to the URL', () => {
+      expect(
+        appendQueryParams('/api/v1/resource', {
+          Category: 'sms',
+          StartDate: '2025-01-01',
+        }),
+      ).toBe('/api/v1/resource?Category=sms&StartDate=2025-01-01');
+    });
+
+    test('should coerce number and boolean parameters to strings', () => {
+      expect(
+        appendQueryParams('/api/v1/resource', {
+          Page: 2,
+          PageSize: 50,
+          IncludeSubaccounts: true,
+        }),
+      ).toBe('/api/v1/resource?Page=2&PageSize=50&IncludeSubaccounts=true');
+    });
+
+    test('should repeat array parameters', () => {
+      expect(
+        appendQueryParams('/api/v1/resource', {
+          Status: ['queued', 'sent'],
+        }),
+      ).toBe('/api/v1/resource?Status=queued&Status=sent');
+    });
+
+    test('should encode parameter names containing range operators', () => {
+      expect(
+        appendQueryParams('/api/v1/resource', {
+          'DateSent<': '2025-01-31',
+          'DateSent>': '2025-01-01',
+        }),
+      ).toBe('/api/v1/resource?DateSent%3C=2025-01-31&DateSent%3E=2025-01-01');
+    });
+
+    test('should skip null parameters', () => {
+      expect(
+        appendQueryParams('/api/v1/resource', {
+          Category: 'sms',
+          StartDate: null,
+          EndDate: undefined,
+        }),
+      ).toBe('/api/v1/resource?Category=sms');
+    });
+
+    test('should use an ampersand if the URL already has a query string', () => {
+      expect(
+        appendQueryParams('/api/v1/resource?Category=sms', { Page: 1 }),
+      ).toBe('/api/v1/resource?Category=sms&Page=1');
     });
   });
 

@@ -471,6 +471,95 @@ describe('loadTools', () => {
     }
   });
 
+  it('should record query parameters on the API', () => {
+    const specs: OpenAPISpec[] = [
+      createMockSpec('service1', {
+        '/resource/{id}': {
+          get: {
+            operationId: 'getResource',
+            description: 'Get a resource',
+            parameters: [
+              {
+                name: 'id',
+                in: 'path',
+                required: true,
+                schema: {
+                  type: 'string',
+                },
+              },
+              {
+                name: 'Category',
+                in: 'query',
+                schema: {
+                  type: 'string',
+                },
+              },
+              {
+                name: 'PageSize',
+                in: 'query',
+                schema: {
+                  type: 'integer',
+                },
+              },
+              {
+                name: 'Authorization',
+                in: 'header',
+                schema: {
+                  type: 'string',
+                },
+              },
+            ],
+          },
+        },
+      }),
+    ];
+
+    const filter = {
+      services: [],
+      tags: [],
+    };
+
+    const { apis } = loadTools(specs, filter);
+
+    for (const [, api] of apis) {
+      expect(api.queryParams).toEqual(['Category', 'PageSize']);
+    }
+  });
+
+  it('should not record query parameters when there are none', () => {
+    const specs: OpenAPISpec[] = [
+      createMockSpec('service1', {
+        '/resource/{id}': {
+          get: {
+            operationId: 'getResource',
+            description: 'Get a resource',
+            parameters: [
+              {
+                name: 'id',
+                in: 'path',
+                required: true,
+                schema: {
+                  type: 'string',
+                },
+              },
+            ],
+          },
+        },
+      }),
+    ];
+
+    const filter = {
+      services: [],
+      tags: [],
+    };
+
+    const { apis } = loadTools(specs, filter);
+
+    for (const [, api] of apis) {
+      expect(api.queryParams).toBeUndefined();
+    }
+  });
+
   it('should use parameter name as description if none is provided', () => {
     const specs: OpenAPISpec[] = [
       createMockSpec('service1', {
