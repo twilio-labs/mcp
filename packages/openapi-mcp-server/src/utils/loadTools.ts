@@ -150,6 +150,13 @@ export default function loadTools(specs: OpenAPISpec[], filters?: ToolFilters) {
                     param.description || `${param.name} parameter`,
                   );
 
+                  if (param.in === 'query') {
+                    if (!api.queryParams) {
+                      api.queryParams = [];
+                    }
+                    api.queryParams.push(param.name);
+                  }
+
                   if (param.required) {
                     tool.inputSchema.required.push(param.name);
                   }

@@ -183,6 +183,170 @@ describe('OpenAPIMCPServer', () => {
     expect(result).toBe(mockHttpResponse);
   });
 
+  it('should append query parameters to GET requests', async () => {
+    class TestServer extends OpenAPIMCPServer {
+      public testMakeRequest(id: string, api: API, body?: any) {
+        return this.makeRequest(id, api, body);
+      }
+    }
+
+    const testServer = new TestServer(mockConfig);
+
+    testServer.http.get = vi.fn().mockResolvedValue({
+      ok: true,
+      data: { result: 'success' },
+      statusCode: 200,
+    });
+
+    await testServer.testMakeRequest(
+      'test-id',
+      {
+        path: '/Accounts/{AccountSid}/Usage/Records/Monthly.json',
+        method: 'GET',
+        contentType: 'application/json',
+        queryParams: ['Category', 'StartDate', 'Page', 'PageSize'],
+      },
+      {
+        AccountSid: 'AC123',
+        Category: 'sms',
+        StartDate: '2025-01-01',
+        Page: 2,
+        PageSize: 50,
+      },
+    );
+
+    expect(testServer.http.get).toHaveBeenCalledWith(
+      '/Accounts/AC123/Usage/Records/Monthly.json?Category=sms&StartDate=2025-01-01&Page=2&PageSize=50',
+      { headers: { 'Content-Type': 'application/json' } },
+    );
+  });
+
+  it('should not add path parameters to the query string of GET requests', async () => {
+    class TestServer extends OpenAPIMCPServer {
+      public testMakeRequest(id: string, api: API, body?: any) {
+        return this.makeRequest(id, api, body);
+      }
+    }
+
+    const testServer = new TestServer(mockConfig);
+
+    testServer.http.get = vi.fn().mockResolvedValue({
+      ok: true,
+      data: { result: 'success' },
+      statusCode: 200,
+    });
+
+    await testServer.testMakeRequest(
+      'test-id',
+      {
+        path: '/Accounts/{AccountSid}/Messages/{Sid}.json',
+        method: 'GET',
+        contentType: 'application/json',
+      },
+      { AccountSid: 'AC123', Sid: 'SM123' },
+    );
+
+    expect(testServer.http.get).toHaveBeenCalledWith(
+      '/Accounts/AC123/Messages/SM123.json',
+      { headers: { 'Content-Type': 'application/json' } },
+    );
+  });
+
+  it('should only add declared query parameters to GET requests', async () => {
+    class TestServer extends OpenAPIMCPServer {
+      public testMakeRequest(id: string, api: API, body?: any) {
+        return this.makeRequest(id, api, body);
+      }
+    }
+
+    const testServer = new TestServer(mockConfig);
+
+    testServer.http.get = vi.fn().mockResolvedValue({
+      ok: true,
+      data: { result: 'success' },
+      statusCode: 200,
+    });
+
+    await testServer.testMakeRequest(
+      'test-id',
+      {
+        path: '/api/test',
+        method: 'GET',
+        contentType: 'application/json',
+        queryParams: ['PageSize'],
+      },
+      { PageSize: 20, Authorization: 'header-value' },
+    );
+
+    expect(testServer.http.get).toHaveBeenCalledWith('/api/test?PageSize=20', {
+      headers: { 'Content-Type': 'application/json' },
+    });
+  });
+
+  it('should repeat array query parameters on GET requests', async () => {
+    class TestServer extends OpenAPIMCPServer {
+      public testMakeRequest(id: string, api: API, body?: any) {
+        return this.makeRequest(id, api, body);
+      }
+    }
+
+    const testServer = new TestServer(mockConfig);
+
+    testServer.http.get = vi.fn().mockResolvedValue({
+      ok: true,
+      data: { result: 'success' },
+      statusCode: 200,
+    });
+
+    await testServer.testMakeRequest(
+      'test-id',
+      {
+        path: '/api/test',
+        method: 'GET',
+        contentType: 'application/json',
+        queryParams: ['Status'],
+      },
+      { Status: ['queued', 'sent'] },
+    );
+
+    expect(testServer.http.get).toHaveBeenCalledWith(
+      '/api/test?Status=queued&Status=sent',
+      { headers: { 'Content-Type': 'application/json' } },
+    );
+  });
+
+  it('should support range query parameters on GET requests', async () => {
+    class TestServer extends OpenAPIMCPServer {
+      public testMakeRequest(id: string, api: API, body?: any) {
+        return this.makeRequest(id, api, body);
+      }
+    }
+
+    const testServer = new TestServer(mockConfig);
+
+    testServer.http.get = vi.fn().mockResolvedValue({
+      ok: true,
+      data: { result: 'success' },
+      statusCode: 200,
+    });
+
+    await testServer.testMakeRequest(
+      'test-id',
+      {
+        path: '/api/test',
+        method: 'GET',
+        contentType: 'application/json',
+        queryParams: ['DateSent<', 'DateSent>'],
+      },
+      { 'DateSent<': '2025-01-31', 'DateSent>': '2025-01-01' },
+    );
+
+    expect(testServer.http.get).toHaveBeenCalledWith(
+      '/api/test?DateSent%3C=2025-01-31&DateSent%3E=2025-01-01',
+      { headers: { 'Content-Type': 'application/json' } },
+    );
+  });
+
   it('should make POST requests via the http util', async () => {
     class TestServer extends OpenAPIMCPServer {
       public testMakeRequest(id: string, api: API, body?: any) {

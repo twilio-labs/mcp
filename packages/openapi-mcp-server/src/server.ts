@@ -20,6 +20,7 @@ import {
 
 import { API } from '@app/types';
 import {
+  appendQueryParams,
   Authorization,
   Http,
   interpolateUrl,
@@ -101,7 +102,13 @@ export default class OpenAPIMCPServer {
     };
 
     if (api.method === 'GET') {
-      return this.http.get(url, { headers });
+      const query = Object.fromEntries(
+        Object.entries(body ?? {}).filter(([key]) =>
+          (api.queryParams ?? []).includes(key),
+        ),
+      );
+
+      return this.http.get(appendQueryParams(url, query), { headers });
     }
 
     if (api.method === 'POST') {

@@ -138,6 +138,32 @@ export const interpolateUrl = (
   });
 };
 
+/**
+ * Append params to the URL as a query string
+ * @param url
+ * @param params
+ */
+export const appendQueryParams = (
+  url: string,
+  params?: Record<string, unknown>,
+) => {
+  if (!params) {
+    return url;
+  }
+
+  const query = qs.stringify(params, {
+    arrayFormat: 'repeat',
+    indices: false,
+    skipNulls: true,
+  });
+
+  if (!query) {
+    return url;
+  }
+
+  return `${url}${url.includes('?') ? '&' : '?'}${query}`;
+};
+
 export default class Http {
   private readonly defaultRequest: RequestInit;
 
