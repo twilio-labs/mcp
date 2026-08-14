@@ -44,6 +44,15 @@ Visit [Twilio API Keys docs](https://www.twilio.com/docs/iam/api-keys) for infor
 
 To guard against injection attacks that may allow untrusted systems access to your Twilio data, the ETI team advises users of Twilio MCP servers to avoid installing or running any community MCP servers alongside our official ones. Doing so helps ensure that only trusted MCP servers have access to tools interacting with your Twilio account, reducing the risk of unauthorized data access.
 
+### Deploying safely with AI agents
+
+An MCP server gives an agent the same power your credentials have. For irreversible, billable actions (sending messages, placing calls), a few deployment practices keep one confused or injected agent turn from becoming an incident:
+
+1. **Scope the credentials, not the prompt.** Prompt-level rules ("only text Alice") are advisory; an injected agent can ignore them. Use a [standard API key](https://www.twilio.com/docs/iam/api-keys) rather than your account SID/auth token, and use this server's `--services` and `--tags` flags to expose only the APIs the agent actually needs. Server- and account-side configuration is enforcement; conversation content is not.
+2. **Gate write-class tools behind approval.** A tool that composes and sends in one call gives an injected instruction a one-step path to damage. Most MCP clients support per-tool approval — enable it for tools that send, call, or purchase, so a human sees the exact payload at the moment of irreversibility.
+3. **Log and review every write.** An independent audit trail (who/what/when/outcome) is the difference between assuming an agent only messaged the intended recipient and knowing it. Review [usage records](https://www.twilio.com/docs/usage/api/usage-record) for volume anomalies.
+4. **Evaluate with a test account first.** Run the agent against a [subaccount](https://www.twilio.com/docs/iam/api/subaccounts) or trial credentials before trusting it with production keys, and treat any tool output or inbound message content the agent reads as untrusted input.
+
 ## Basic Configuration Options
 
 Both packages accept configuration parameters. Here's a brief overview:
